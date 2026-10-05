@@ -1,0 +1,40 @@
+{
+  "modules": {
+    "rekensnelheid": {
+      "enabled": false,
+      "title": "RekenSnelheid",
+      "icon": "⚡",
+      "description": "Snelheid & Accuraatheid"
+    },
+    "peeler": {
+      "enabled": false,
+      "title": "Math Peeler",
+      "icon": "🧅",
+      "description": "Algebraïsch Inzicht"
+    },
+    "kubus": {
+      "enabled": true,
+      "title": "Kubus Fusie",
+      "icon": "🧊",
+      "description": "Strategisch Rekenen"
+    },
+    "formules": {
+      "enabled": true,
+      "title": "Formules & Tabellen",
+      "icon": "📈",
+      "description": "Grafieken & Functies"
+    },
+    "breuken": {
+      "enabled": true,
+      "title": "Breuken & Percentages",
+      "icon": "🍰",
+      "description": "Visueel & Verhoudingen"
+    },
+    "statistiek": {
+      "enabled": true,
+      "title": "Statistiek & Diagrammen",
+      "icon": "📊",
+      "description": "Data & Centrummaten"
+    }
+  }
+}
