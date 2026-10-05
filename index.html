@@ -1,0 +1,2093 @@
+<!DOCTYPE html>
+<html lang="nl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Math & Reken Hub - Accessibility Enhanced</title>
+
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            darkMode: 'class',
+            theme: {
+                extend: {
+                    fontFamily: {
+                        sans: ['Inter', 'sans-serif'],
+                        lexend: ['Lexend', 'sans-serif'],
+                        dyslexic: ['OpenDyslexic', 'sans-serif']
+                    },
+                    boxShadow: {
+                        'glow-purple': '0 0 25px -5px rgba(168, 85, 247, 0.4)',
+                        'glow-amber': '0 0 25px -5px rgba(245, 158, 11, 0.4)',
+                        'glow-emerald': '0 0 25px -5px rgba(16, 185, 129, 0.4)',
+                        'glow-blue': '0 0 25px -5px rgba(59, 130, 246, 0.4)',
+                    }
+                }
+            }
+        }
+    </script>
+
+    <!-- MathJax for rendering math equations -->
+    <script id="MathJax-script" async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+
+    <!-- Google Fonts & OpenDyslexic CSS -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&family=Lexend:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/open-dyslexic-styling@1.0.2/open-dyslexic/style.css" rel="stylesheet">
+    
+    <style>
+        body.font-inter { font-family: 'Inter', sans-serif !important; }
+        body.font-lexend { font-family: 'Lexend', sans-serif !important; }
+        body.font-dyslexic { font-family: 'OpenDyslexic', 'Inter', sans-serif !important; }
+
+        /* OLED Pitch-Black Dark Mode Overrides */
+        html.oled-dark,
+        html.oled-dark body {
+            background-color: #000000 !important;
+            color: #ffffff !important;
+        }
+
+        html.oled-dark .bg-white,
+        html.oled-dark .bg-slate-800,
+        html.oled-dark .bg-slate-900,
+        html.oled-dark .bg-gray-50,
+        html.oled-dark .bg-gray-100 {
+            background-color: #000000 !important;
+            border-color: #262626 !important;
+            color: #ffffff !important;
+        }
+
+        html.oled-dark input,
+        html.oled-dark select {
+            background-color: #050505 !important;
+            border-color: #404040 !important;
+            color: #ffffff !important;
+        }
+
+        button:focus-visible, 
+        a:focus-visible, 
+        input:focus-visible,
+        select:focus-visible {
+            outline: 3px solid #6366f1 !important;
+            outline-offset: 3px !important;
+        }
+
+        /* ===== KUBUS FUSIE (Blooket-stijl) ===== */
+        .kb-stage { background: linear-gradient(165deg, #3730a3 0%, #1e1b4b 55%, #0b1020 100%); border: 3px solid #6366f1; border-radius: 1.75rem; padding: 1rem; color: #fff; box-shadow: 0 24px 48px -16px rgba(49, 46, 129, .6); display: flex; flex-direction: column; gap: .75rem; }
+        .kb-top { display: flex; align-items: center; justify-content: space-between; gap: .75rem; flex-wrap: wrap; }
+        .kb-coinbox { display: flex; align-items: center; gap: .6rem; background: rgba(15, 23, 42, .6); border: 2px solid rgba(251, 191, 36, .45); border-radius: 1.1rem; padding: .45rem .9rem; }
+        .kb-coin-icon { font-size: 1.9rem; line-height: 1; }
+        .kb-label { margin: 0; font-size: .7rem; font-weight: 800; letter-spacing: .08em; text-transform: uppercase; color: #c7d2fe; }
+        .kb-coin { font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace; font-weight: 900; font-size: 2rem; line-height: 1.05; color: #fcd34d; text-shadow: 0 2px 0 #92400e; }
+        .kb-actions { display: flex; gap: .5rem; }
+        .kb-btn { background: #6366f1; color: #fff; font-weight: 800; font-size: .75rem; padding: .55rem .9rem; border-radius: .9rem; border: 0; border-bottom: 4px solid #3730a3; cursor: pointer; transition: transform .08s, filter .15s; }
+        .kb-btn:hover { filter: brightness(1.12); }
+        .kb-btn:active { transform: translateY(2px); border-bottom-width: 2px; }
+        .kb-btn-ghost { background: #1e293b; border-bottom-color: #0f172a; }
+        .kb-panel { background: rgba(15, 23, 42, .55); border: 2px solid rgba(129, 140, 248, .35); border-radius: 1.25rem; padding: .75rem; display: flex; flex-direction: column; gap: .5rem; }
+        .kb-grid { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 8px; }
+        .kb-slot { height: 76px; display: flex; align-items: center; justify-content: center; position: relative; background: rgba(255, 255, 255, .05); border: 2px dashed rgba(165, 180, 252, .22); border-radius: 1rem; }
+        .kb-board-frame { position: relative; }
+        .kb-fx { position: absolute; inset: 0; pointer-events: none; z-index: 25; }
+        .kb-inspect { margin: 0; min-height: 1.9rem; padding: .35rem .8rem; border-radius: .8rem; background: rgba(15, 23, 42, .6); border: 1px solid rgba(129, 140, 248, .3); font-size: .8rem; font-weight: 700; color: #e0e7ff; text-align: center; }
+        .kb-status { margin: 0; min-height: 1.3rem; font-size: .8rem; font-weight: 700; color: #fde68a; text-align: center; }
+        .kb-how { background: rgba(15, 23, 42, .55); border: 2px solid rgba(129, 140, 248, .3); border-radius: 1rem; padding: .6rem .9rem; font-size: .78rem; color: #e0e7ff; }
+        .kb-how summary { cursor: pointer; font-weight: 800; }
+        .kb-how ul { margin: .5rem 0 0 1.1rem; list-style: disc; display: flex; flex-direction: column; gap: .35rem; line-height: 1.45; }
+
+        .kb-cube { --s: 1; position: relative; display: flex; align-items: center; justify-content: center; width: calc(var(--s) * 52px); height: calc(var(--s) * 52px); padding: 0; border: 0; cursor: pointer; touch-action: none; user-select: none; -webkit-user-select: none; box-shadow: inset 0 -7px 0 rgba(0, 0, 0, .22), inset 0 5px 0 rgba(255, 255, 255, .3), 0 6px 10px rgba(0, 0, 0, .4); transition: transform .12s ease, filter .15s; }
+        .kb-cube::after { content: ""; position: absolute; top: 9%; left: 14%; width: 26%; height: 12%; border-radius: 999px; background: rgba(255, 255, 255, .45); transform: rotate(-20deg); }
+        .kb-cube:hover { transform: scale(1.08); z-index: 20; }
+        .kb-cube[aria-disabled="true"] { filter: grayscale(.75) brightness(.75); cursor: not-allowed; }
+        .kb-eyes { display: flex; gap: calc(var(--s) * 7px); margin-top: calc(var(--s) * -2px); }
+        .kb-eye, .kb-pupil { display: block; font-style: normal; }
+        .kb-eye { position: relative; width: calc(var(--s) * 13px); height: calc(var(--s) * 15px); background: #fff; border-radius: 50%; box-shadow: inset 0 -2px 0 rgba(0, 0, 0, .12); }
+        .kb-pupil { position: absolute; width: 55%; height: 55%; left: 25%; top: 30%; background: #0f172a; border-radius: 50%; }
+
+        .kb-tip { position: absolute; bottom: calc(100% + 8px); left: 50%; transform: translateX(-50%); background: #0f172a; color: #fff; border: 2px solid #818cf8; border-radius: .7rem; padding: .35rem .6rem; font-size: .7rem; font-weight: 800; line-height: 1.35; white-space: pre; text-align: left; opacity: 0; visibility: hidden; pointer-events: none; transition: opacity .12s; z-index: 40; }
+        .kb-cube:hover .kb-tip, .kb-cube:focus-visible .kb-tip { opacity: 1; visibility: visible; }
+
+        @keyframes kbFall { from { transform: translateY(calc(var(--fall) * -1)); } to { transform: translateY(0); } }
+        .kb-fall { animation: kbFall var(--dur, .3s) cubic-bezier(.35, 0, .7, 1) backwards; }
+        @keyframes kbBurst { 0% { transform: scale(.4); opacity: .9; } 100% { transform: scale(3.2); opacity: 0; } }
+        @keyframes kbFloat { 0% { transform: translate(-50%, -50%); opacity: 1; } 100% { transform: translate(-50%, calc(-50% - 36px)); opacity: 0; } }
+        .kb-burst { position: absolute; width: 0; height: 0; }
+        .kb-burst::before { content: ""; position: absolute; width: 34px; height: 34px; margin: -17px; border-radius: 50%; background: var(--c); animation: kbBurst .5s ease-out forwards; }
+        .kb-burst span { position: absolute; white-space: nowrap; font-weight: 900; font-size: .95rem; color: #fde68a; text-shadow: 0 2px 0 #78350f, 0 0 6px rgba(0, 0, 0, .6); transform: translate(-50%, -50%); animation: kbFloat .9s ease-out forwards; }
+        .kb-stage button:focus-visible { outline: 3px solid #fff !important; outline-offset: 3px !important; }
+        @media (prefers-reduced-motion: reduce) {
+            .kb-fall { animation: none; }
+            .kb-burst::before { display: none; }
+            .kb-burst span { animation: none; }
+            .kb-cube, .kb-btn { transition: none; }
+        }
+
+        @keyframes pulse-correct {
+            0% { border-color: rgba(34, 197, 94, 0.9); box-shadow: 0 0 20px rgba(34, 197, 94, 0.5); }
+            100% { border-color: inherit; box-shadow: none; }
+        }
+        @keyframes pulse-wrong {
+            0% { border-color: rgba(239, 68, 68, 0.9); box-shadow: 0 0 20px rgba(239, 68, 68, 0.5); }
+            100% { border-color: inherit; box-shadow: none; }
+        }
+        .correct-flash { animation: pulse-correct 0.4s ease-out; }
+        .wrong-flash { animation: pulse-wrong 0.4s ease-out; }
+    </style>
+</head>
+<body class="font-inter bg-slate-50 text-slate-900 dark:bg-slate-950 dark:text-slate-100 min-h-screen flex flex-col justify-between transition-colors duration-200">
+
+    <!-- HEADER NAV WITH ACCESSIBILITY CONTROLS & MODULE NAV -->
+    <header class="w-full bg-white/90 dark:bg-slate-900/90 backdrop-blur-md border-b border-slate-200 dark:border-slate-800 sticky top-0 z-50 transition-colors">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 py-2.5 flex flex-wrap items-center justify-between gap-3">
+            
+            <!-- Logo & Brand -->
+            <button onclick="resetToHub()" class="flex items-center gap-3 group text-left focus:outline-none" aria-label="Terug naar Home">
+                <div class="w-10 h-10 rounded-2xl bg-gradient-to-tr from-indigo-600 to-purple-600 flex items-center justify-center text-white font-black text-xl shadow-lg group-hover:scale-105 transition-transform">
+                    ∑
+                </div>
+                <div>
+                    <h1 class="text-lg sm:text-xl font-extrabold tracking-tight bg-gradient-to-r from-indigo-600 via-purple-600 to-pink-500 bg-clip-text text-transparent">Math & Reken Hub</h1>
+                    <p class="text-[11px] text-slate-500 dark:text-slate-400 font-medium leading-none" data-i18n="subtitle">VWO & HAVO Oefenplatform</p>
+                </div>
+            </button>
+
+            <!-- STATS PREVIEW STRIP -->
+            <div class="hidden xl:flex items-center gap-5 bg-slate-100 dark:bg-slate-800/80 px-4 py-1.5 rounded-2xl border border-slate-200 dark:border-slate-700 text-xs font-semibold">
+                <div class="flex items-center gap-1.5">
+                    <span class="text-base">🔥</span>
+                    <span class="text-slate-500 dark:text-slate-400" data-i18n="stat_streak">Streak:</span>
+                    <span id="user-streak-val" class="font-bold text-amber-500">5 Dagen</span>
+                </div>
+                <div class="h-4 w-px bg-slate-300 dark:bg-slate-700"></div>
+                <div class="flex items-center gap-1.5">
+                    <span class="text-base">⭐</span>
+                    <span class="text-slate-500 dark:text-slate-400">XP:</span>
+                    <span id="user-xp-val" class="font-bold text-indigo-500 dark:text-indigo-400">1,450 XP</span>
+                </div>
+                <div class="h-4 w-px bg-slate-300 dark:bg-slate-700"></div>
+                <div class="flex items-center gap-1.5">
+                    <span class="text-base">⚡</span>
+                    <span class="text-slate-500 dark:text-slate-400" data-i18n="stat_speed">Snelheid:</span>
+                    <span id="user-speed-val" class="font-bold text-emerald-500">2.4s/som</span>
+                </div>
+            </div>
+
+            <!-- TOOLBAR ACTIONS & PAGES -->
+            <div class="flex items-center gap-1.5 sm:gap-2">
+                
+                <button onclick="resetToHub()" class="flex items-center gap-1 px-3 py-1.5 text-xs font-semibold rounded-xl bg-slate-100 dark:bg-slate-800 hover:bg-slate-200 dark:hover:bg-slate-700 transition" data-i18n="nav_home">
+                    🏠 Home
+                </button>
+
+                <button onclick="showView('theorie-view')" class="hidden sm:flex items-center gap-1 px-3 py-1.5 text-xs font-semibold rounded-xl bg-slate-100 dark:bg-slate-800 hover:bg-slate-200 dark:hover:bg-slate-700 transition" data-i18n="nav_theory">
+                    📚 Theorie
+                </button>
+
+                <button onclick="showView('voortgang-view')" class="hidden sm:flex items-center gap-1 px-3 py-1.5 text-xs font-semibold rounded-xl bg-slate-100 dark:bg-slate-800 hover:bg-slate-200 dark:hover:bg-slate-700 transition" data-i18n="nav_progress">
+                    🏆 Voortgang
+                </button>
+
+                <!-- Language Switcher -->
+                <div class="flex items-center bg-slate-100 dark:bg-slate-800 rounded-xl p-1 text-xs font-bold border border-slate-200 dark:border-slate-700">
+                    <button onclick="setLanguage('nl')" id="lang-btn-nl" class="px-2 py-0.5 rounded-lg bg-white dark:bg-slate-700 shadow-sm transition">NL</button>
+                    <button onclick="setLanguage('en')" id="lang-btn-en" class="px-2 py-0.5 rounded-lg transition opacity-70 hover:opacity-100">EN</button>
+                </div>
+
+                <!-- Accessibility Dropdown Trigger -->
+                <div class="relative">
+                    <button id="a11y-button" onclick="toggleA11yMenu(event)" class="flex items-center justify-center w-9 h-9 rounded-xl bg-indigo-100 dark:bg-indigo-900/40 text-indigo-600 dark:text-indigo-400 hover:bg-indigo-200 dark:hover:bg-indigo-800/60 transition focus:outline-none border border-indigo-200 dark:border-indigo-800/50" aria-label="Toegankelijkheidsopties">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                            <circle cx="12" cy="4" r="2"></circle>
+                            <path d="M15 22v-5l-1.5-6H10.5L9 17v5"></path>
+                            <path d="M6 10l6-1 6 1"></path>
+                        </svg>
+                    </button>
+
+                    <!-- Accessibility Menu Dropdown -->
+                    <div id="a11y-dropdown" class="hidden absolute right-0 top-full mt-2 w-72 bg-white dark:bg-slate-800 rounded-2xl shadow-2xl border border-slate-200 dark:border-slate-700 overflow-hidden transform origin-top-right transition-all z-50">
+                        <div class="p-4 border-b border-slate-100 dark:border-slate-700 bg-slate-50 dark:bg-slate-800/50">
+                            <h3 class="font-bold text-sm text-slate-900 dark:text-white flex items-center gap-2">
+                                <span>♿</span>
+                                <span data-i18n="a11y">Toegankelijkheid</span>
+                            </h3>
+                        </div>
+                        <div class="p-4 space-y-4">
+                            <!-- Theme Switcher -->
+                            <div class="space-y-1.5">
+                                <label class="text-xs font-semibold uppercase tracking-wider text-slate-500 dark:text-slate-400" data-i18n="theme">Thema</label>
+                                <div class="grid grid-cols-3 gap-1 bg-slate-100 dark:bg-slate-700/60 rounded-xl p-1 text-xs font-bold border border-slate-200 dark:border-slate-600">
+                                    <button onclick="setTheme('light')" id="theme-btn-light" class="px-2 py-1.5 rounded-lg transition flex flex-col items-center gap-1">
+                                        <span>☀️</span> <span data-i18n="light">Licht</span>
+                                    </button>
+                                    <button onclick="setTheme('dark')" id="theme-btn-dark" class="px-2 py-1.5 rounded-lg bg-white dark:bg-slate-800 shadow-sm transition flex flex-col items-center gap-1">
+                                        <span>🌙</span> <span data-i18n="dark">Donker</span>
+                                    </button>
+                                    <button onclick="setTheme('oled')" id="theme-btn-oled" class="px-2 py-1.5 rounded-lg transition flex flex-col items-center gap-1">
+                                        <span>🖤</span> <span>OLED</span>
+                                    </button>
+                                </div>
+                            </div>
+
+                            <!-- Font Switcher -->
+                            <div class="space-y-1.5">
+                                <label class="text-xs font-semibold uppercase tracking-wider text-slate-500 dark:text-slate-400" data-i18n="font">Lettertype</label>
+                                <div class="flex flex-col gap-1 bg-slate-100 dark:bg-slate-700/60 rounded-xl p-1 text-xs font-medium border border-slate-200 dark:border-slate-600">
+                                    <button onclick="setFont('inter')" id="font-btn-inter" class="px-3 py-2 rounded-lg bg-white dark:bg-slate-800 shadow-sm text-left">
+                                        Standaard (Inter)
+                                    </button>
+                                    <button onclick="setFont('lexend')" id="font-btn-lexend" class="px-3 py-2 rounded-lg text-left font-[Lexend] opacity-70 hover:opacity-100">
+                                        Lexend (Leesbaarheid)
+                                    </button>
+                                    <button onclick="setFont('dyslexic')" id="font-btn-dyslexic" class="px-3 py-2 rounded-lg text-left font-[OpenDyslexic] opacity-70 hover:opacity-100">
+                                        OpenDyslexic
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- MODULE QUICK NAVIGATION STRIP -->
+        <nav class="bg-slate-100/80 dark:bg-slate-900/50 border-t border-slate-200/60 dark:border-slate-800/60 py-1.5 px-4 overflow-x-auto">
+            <div class="max-w-7xl mx-auto flex items-center justify-start sm:justify-center gap-2 text-xs font-semibold whitespace-nowrap">
+                <button onclick="setupGame('rekensnelheid')" class="px-3 py-1 rounded-lg hover:bg-amber-500/10 hover:text-amber-600 dark:hover:text-amber-400 transition flex items-center gap-1">
+                    <span>⚡</span> <span data-i18n="nav_speed">RekenSnelheid</span>
+                </button>
+                <button onclick="setupGame('peeler')" class="px-3 py-1 rounded-lg hover:bg-purple-500/10 hover:text-purple-600 dark:hover:text-purple-400 transition flex items-center gap-1">
+                    <span>🧅</span> <span data-i18n="nav_peeler">Math Peeler</span>
+                </button>
+                <button onclick="startKubus()" class="px-3 py-1 rounded-lg hover:bg-fuchsia-500/10 hover:text-fuchsia-700 dark:hover:text-fuchsia-400 transition flex items-center gap-1">
+                    <span aria-hidden="true">🧊</span> <span data-i18n="kb_title">Kubus Fusie</span>
+                </button>
+                <button onclick="showView('formules-view')" class="px-3 py-1 rounded-lg hover:bg-blue-500/10 hover:text-blue-600 dark:hover:text-blue-400 transition flex items-center gap-1">
+                    <span>📈</span> <span data-i18n="nav_formulas">Formules & Tabellen</span>
+                </button>
+                <button onclick="showView('breuken-view')" class="px-3 py-1 rounded-lg hover:bg-pink-500/10 hover:text-pink-600 dark:hover:text-pink-400 transition flex items-center gap-1">
+                    <span>🍰</span> <span data-i18n="nav_fractions">Breuken & %</span>
+                </button>
+                <button onclick="showView('statistiek-view')" class="px-3 py-1 rounded-lg hover:bg-teal-500/10 hover:text-teal-600 dark:hover:text-teal-400 transition flex items-center gap-1">
+                    <span>📊</span> <span data-i18n="nav_stats">Statistiek</span>
+                </button>
+            </div>
+        </nav>
+    </header>
+
+    <!-- MAIN CONTAINER -->
+    <main class="max-w-7xl mx-auto w-full px-4 sm:px-6 py-6 flex-1">
+
+        <!-- VIEW 1: HUB / DASHBOARD VIEW -->
+        <section id="hub-view" class="space-y-8 py-2">
+            <div class="relative overflow-hidden rounded-3xl bg-gradient-to-r from-indigo-600 via-indigo-700 to-purple-800 text-white p-6 sm:p-8 shadow-xl">
+                <div class="relative z-10 max-w-2xl space-y-3">
+                    <span class="inline-block px-3 py-1 text-xs font-bold uppercase tracking-widest bg-white/20 backdrop-blur-md rounded-full text-indigo-100" data-i18n="hub_tag">
+                        Oefen & Verbeter
+                    </span>
+                    <h2 class="text-2xl sm:text-4xl font-extrabold tracking-tight" data-i18n="welcome_title">Welkom bij Math & Reken Hub</h2>
+                    <p class="text-indigo-100 text-xs sm:text-sm leading-relaxed" data-i18n="hub_desc">
+                        Train in 5 minuten je rekenvaardigheid, algebraïsch inzicht, formules, breuken en statistiek voor VMBO, HAVO & VWO!
+                    </p>
+                </div>
+                <div class="absolute -right-8 -bottom-10 opacity-20 pointer-events-none text-9xl font-black">
+                    ∫ dx
+                </div>
+            </div>
+
+            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                <!-- Game 1: RekenSnelheid -->
+                <div class="bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700/80 rounded-3xl p-6 shadow-md hover:shadow-xl hover:-translate-y-1 transition-all duration-200 flex flex-col justify-between group">
+                    <div class="space-y-4">
+                        <div class="flex items-center justify-between">
+                            <div class="w-12 h-12 rounded-2xl bg-amber-500/10 border border-amber-500/20 text-amber-500 flex items-center justify-center text-2xl shadow-sm group-hover:scale-110 transition-transform">
+                                ⚡
+                            </div>
+                            <span class="px-2.5 py-1 rounded-full text-[10px] font-extrabold tracking-wider bg-amber-100 text-amber-800 dark:bg-amber-950/80 dark:text-amber-300 uppercase">
+                                SPEED
+                            </span>
+                        </div>
+                        <div>
+                            <h3 class="text-xl font-extrabold" data-i18n="g1_title">RekenSnelheid</h3>
+                            <p class="text-xs text-amber-600 dark:text-amber-400 font-semibold mt-0.5" data-i18n="g1_sub">Snelheid & Accuraatheid</p>
+                        </div>
+                        <p class="text-xs text-slate-600 dark:text-slate-300 leading-relaxed" data-i18n="g1_desc">
+                            Los sommen op tegen de klok en vergelijk je snelheid met de menselijke normaalverdeling.
+                        </p>
+                    </div>
+
+                    <div class="mt-6 pt-4 border-t border-slate-100 dark:border-slate-700/60 space-y-3">
+                        <button onclick="setupGame('rekensnelheid')" class="w-full py-3 px-4 bg-amber-500 hover:bg-amber-600 active:scale-[0.98] text-white font-bold rounded-2xl shadow-lg shadow-amber-500/25 transition text-xs" data-i18n="g1_btn">
+                            Speel RekenSnelheid
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Game 2: Math Peeler -->
+                <div class="bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700/80 rounded-3xl p-6 shadow-md hover:shadow-xl hover:-translate-y-1 transition-all duration-200 flex flex-col justify-between group">
+                    <div class="space-y-4">
+                        <div class="flex items-center justify-between">
+                            <div class="w-12 h-12 rounded-2xl bg-purple-500/10 border border-purple-500/20 text-purple-500 flex items-center justify-center text-2xl shadow-sm group-hover:scale-110 transition-transform">
+                                🧅
+                            </div>
+                            <span class="px-2.5 py-1 rounded-full text-[10px] font-extrabold tracking-wider bg-purple-100 text-purple-800 dark:bg-purple-950/80 dark:text-purple-300 uppercase">
+                                ALGEBRA
+                            </span>
+                        </div>
+                        <div>
+                            <h3 class="text-xl font-extrabold">Math Peeler</h3>
+                            <p class="text-xs text-purple-600 dark:text-purple-400 font-semibold mt-0.5" data-i18n="g2_sub">Algebraïsch Inzicht</p>
+                        </div>
+                        <p class="text-xs text-slate-600 dark:text-slate-300 leading-relaxed" data-i18n="g2_desc">
+                            Pel ingewikkelde formules van buiten naar binnen af. Inclusief een ♾️ Infinite Mode!
+                        </p>
+                    </div>
+
+                    <div class="mt-6 pt-4 border-t border-slate-100 dark:border-slate-700/60 space-y-3">
+                        <button onclick="setupGame('peeler')" class="w-full py-3 px-4 bg-purple-600 hover:bg-purple-700 active:scale-[0.98] text-white font-bold rounded-2xl shadow-lg shadow-purple-600/25 transition text-xs" data-i18n="g2_btn">
+                            Speel Math Peeler
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Game 3: Kubus Fusie -->
+                <div class="bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700/80 rounded-3xl p-6 shadow-md hover:shadow-xl hover:-translate-y-1 transition-all duration-200 flex flex-col justify-between group">
+                    <div class="space-y-4">
+                        <div class="flex items-center justify-between">
+                            <div class="w-12 h-12 rounded-2xl bg-fuchsia-500/10 border border-fuchsia-500/20 text-fuchsia-500 flex items-center justify-center text-2xl shadow-sm group-hover:scale-110 transition-transform" aria-hidden="true">
+                                🧊
+                            </div>
+                            <span class="px-2.5 py-1 rounded-full text-[10px] font-extrabold tracking-wider bg-fuchsia-100 text-fuchsia-800 dark:bg-fuchsia-950/80 dark:text-fuchsia-300 uppercase">
+                                STRATEGIE
+                            </span>
+                        </div>
+                        <div>
+                            <h3 class="text-xl font-extrabold" data-i18n="kb_title">Kubus Fusie</h3>
+                            <p class="text-xs text-fuchsia-700 dark:text-fuchsia-400 font-semibold mt-0.5" data-i18n="kb_sub">Strategisch Rekenen</p>
+                        </div>
+                        <p class="text-xs text-slate-600 dark:text-slate-300 leading-relaxed" data-i18n="kb_desc">
+                            Koop kubussen, laat ze vallen en smelt ze samen. Optellen, vermenigvuldigen en slim plannen levert de meeste munten op!
+                        </p>
+                    </div>
+
+                    <div class="mt-6 pt-4 border-t border-slate-100 dark:border-slate-700/60 space-y-3">
+                        <button onclick="startKubus()" class="w-full py-3 px-4 bg-fuchsia-700 hover:bg-fuchsia-800 active:scale-[0.98] text-white font-bold rounded-2xl shadow-lg shadow-fuchsia-700/25 transition text-xs" data-i18n="kb_btn">
+                            Speel Kubus Fusie
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Page 4: Formules & Tabellen -->
+                <div class="bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700/80 rounded-3xl p-6 shadow-md hover:shadow-xl hover:-translate-y-1 transition-all duration-200 flex flex-col justify-between group">
+                    <div class="space-y-4">
+                        <div class="flex items-center justify-between">
+                            <div class="w-12 h-12 rounded-2xl bg-blue-500/10 border border-blue-500/20 text-blue-500 flex items-center justify-center text-2xl shadow-sm group-hover:scale-110 transition-transform">
+                                📈
+                            </div>
+                            <span class="px-2.5 py-1 rounded-full text-[10px] font-extrabold tracking-wider bg-blue-100 text-blue-800 dark:bg-blue-950/80 dark:text-blue-300 uppercase">
+                                FUNCTIES
+                            </span>
+                        </div>
+                        <div>
+                            <h3 class="text-xl font-extrabold" data-i18n="g4_title">Formules & Tabellen</h3>
+                            <p class="text-xs text-blue-600 dark:text-blue-400 font-semibold mt-0.5" data-i18n="g4_sub">Grafieken & Functies</p>
+                        </div>
+                        <p class="text-xs text-slate-600 dark:text-slate-300 leading-relaxed" data-i18n="g4_desc">
+                            Onderzoek lineaire, kwadratische en exponentiële formules. Vul tabellen in en bekijk de grafiek!
+                        </p>
+                    </div>
+
+                    <div class="mt-6 pt-4 border-t border-slate-100 dark:border-slate-700/60 space-y-3">
+                        <button onclick="showView('formules-view')" class="w-full py-3 px-4 bg-blue-600 hover:bg-blue-700 active:scale-[0.98] text-white font-bold rounded-2xl shadow-lg shadow-blue-600/25 transition text-xs" data-i18n="g4_btn">
+                            Open Formules & Tabellen
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Page 5: Breuken & Percentages -->
+                <div class="bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700/80 rounded-3xl p-6 shadow-md hover:shadow-xl hover:-translate-y-1 transition-all duration-200 flex flex-col justify-between group">
+                    <div class="space-y-4">
+                        <div class="flex items-center justify-between">
+                            <div class="w-12 h-12 rounded-2xl bg-pink-500/10 border border-pink-500/20 text-pink-500 flex items-center justify-center text-2xl shadow-sm group-hover:scale-110 transition-transform">
+                                🍰
+                            </div>
+                            <span class="px-2.5 py-1 rounded-full text-[10px] font-extrabold tracking-wider bg-pink-100 text-pink-800 dark:bg-pink-950/80 dark:text-pink-300 uppercase">
+                                RATIO
+                            </span>
+                        </div>
+                        <div>
+                            <h3 class="text-xl font-extrabold" data-i18n="g5_title">Breuken & Percentages</h3>
+                            <p class="text-xs text-pink-600 dark:text-pink-400 font-semibold mt-0.5" data-i18n="g5_sub">Visueel & Verhoudingen</p>
+                        </div>
+                        <p class="text-xs text-slate-600 dark:text-slate-300 leading-relaxed" data-i18n="g5_desc">
+                            Converteer breuken, decimalen en percentages met interactieve visuele cirkel- en balkdiagrammen.
+                        </p>
+                    </div>
+
+                    <div class="mt-6 pt-4 border-t border-slate-100 dark:border-slate-700/60 space-y-3">
+                        <button onclick="showView('breuken-view')" class="w-full py-3 px-4 bg-pink-600 hover:bg-pink-700 active:scale-[0.98] text-white font-bold rounded-2xl shadow-lg shadow-pink-600/25 transition text-xs" data-i18n="g5_btn">
+                            Open Breuken & %
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Page 6: Statistiek & Diagrammen -->
+                <div class="bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700/80 rounded-3xl p-6 shadow-md hover:shadow-xl hover:-translate-y-1 transition-all duration-200 flex flex-col justify-between group">
+                    <div class="space-y-4">
+                        <div class="flex items-center justify-between">
+                            <div class="w-12 h-12 rounded-2xl bg-teal-500/10 border border-teal-500/20 text-teal-500 flex items-center justify-center text-2xl shadow-sm group-hover:scale-110 transition-transform">
+                                📊
+                            </div>
+                            <span class="px-2.5 py-1 rounded-full text-[10px] font-extrabold tracking-wider bg-teal-100 text-teal-800 dark:bg-teal-950/80 dark:text-teal-300 uppercase">
+                                DATA
+                            </span>
+                        </div>
+                        <div>
+                            <h3 class="text-xl font-extrabold" data-i18n="g6_title">Statistiek & Diagrammen</h3>
+                            <p class="text-xs text-teal-600 dark:text-teal-400 font-semibold mt-0.5" data-i18n="g6_sub">Data & Centrummaten</p>
+                        </div>
+                        <p class="text-xs text-slate-600 dark:text-slate-300 leading-relaxed" data-i18n="g6_desc">
+                            Bereken gemiddelde, mediaan, modus en spreiding met automatische histogrammen en boxplots.
+                        </p>
+                    </div>
+
+                    <div class="mt-6 pt-4 border-t border-slate-100 dark:border-slate-700/60 space-y-3">
+                        <button onclick="showView('statistiek-view')" class="w-full py-3 px-4 bg-teal-600 hover:bg-teal-700 active:scale-[0.98] text-white font-bold rounded-2xl shadow-lg shadow-teal-600/25 transition text-xs" data-i18n="g6_btn">
+                            Open Statistiek & Diagrammen
+                        </button>
+                    </div>
+                </div>
+
+            </div>
+        </section>
+
+        <!-- VIEW 2: LEVEL & MODE SELECTION -->
+        <section id="setup-view" class="hidden max-w-2xl mx-auto py-6">
+            <div class="bg-white dark:bg-slate-800 rounded-3xl p-6 sm:p-8 shadow-2xl border border-slate-200 dark:border-slate-700 text-center space-y-6">
+                <div id="setup-icon" class="text-6xl animate-bounce">🎮</div>
+                <div>
+                    <h2 id="setup-title" class="text-3xl font-extrabold" data-i18n="setup_title">Kies je niveau</h2>
+                    <p id="setup-subtitle" class="text-xs sm:text-sm text-slate-500 dark:text-slate-400 mt-1" data-i18n="setup_desc">Selecteer de gewenste moeilijkheidsgraad om te starten.</p>
+                </div>
+
+                <button onclick="toggleHelp()" class="mx-auto text-indigo-500 hover:text-indigo-600 dark:text-indigo-400 text-xs font-semibold flex items-center justify-center gap-1.5 transition rounded-lg p-1">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" /></svg>
+                    <span data-i18n="how_to_play">Hoe werkt dit?</span>
+                </button>
+                <div id="setup-help-box" class="hidden p-4 bg-indigo-50 dark:bg-indigo-950/40 border border-indigo-200 dark:border-indigo-800/60 rounded-2xl text-xs text-indigo-900 dark:text-indigo-200 text-left leading-relaxed shadow-inner">
+                </div>
+                
+                <div id="peeler-highscore-container" class="hidden p-4 rounded-2xl bg-slate-100 dark:bg-slate-900 border border-slate-200 dark:border-slate-700">
+                    <span class="text-xs font-semibold uppercase tracking-wider text-slate-500 dark:text-slate-400 block mb-1" data-i18n="setup_hs">High Score Infinite Mode</span>
+                    <span id="peeler-highscore-val" class="text-3xl sm:text-4xl font-black font-mono tracking-wider">0</span>
+                </div>
+
+                <div class="flex flex-col sm:flex-row gap-3 items-stretch">
+                    <div id="setup-buttons-grid" class="grid grid-cols-1 sm:grid-cols-3 gap-3 flex-1">
+                        <button onclick="startGame(1)" class="p-4 rounded-2xl border-2 border-emerald-500 text-emerald-700 dark:text-emerald-400 font-bold hover:bg-emerald-50 dark:hover:bg-emerald-950/30 transition flex flex-col items-center justify-center space-y-1 active:scale-95">
+                            <span class="text-base" data-i18n="lvl1">Niveau 1</span>
+                            <span class="text-xs font-normal opacity-80" data-i18n="lvl1_sub">Makkelijk</span>
+                        </button>
+                        <button onclick="startGame(2)" class="p-4 rounded-2xl border-2 border-amber-500 text-amber-700 dark:text-amber-400 font-bold hover:bg-amber-50 dark:hover:bg-amber-950/30 transition flex flex-col items-center justify-center space-y-1 active:scale-95">
+                            <span class="text-base" data-i18n="lvl2">Niveau 2</span>
+                            <span class="text-xs font-normal opacity-80" data-i18n="lvl2_sub">Gemiddeld</span>
+                        </button>
+                        <button onclick="startGame(3)" class="p-4 rounded-2xl border-2 border-rose-500 text-rose-700 dark:text-rose-400 font-bold hover:bg-rose-50 dark:hover:bg-rose-950/30 transition flex flex-col items-center justify-center space-y-1 active:scale-95">
+                            <span class="text-base" data-i18n="lvl3">Niveau 3</span>
+                            <span class="text-xs font-normal opacity-80" data-i18n="lvl3_sub">Moeilijk</span>
+                        </button>
+                    </div>
+
+                    <button id="btn-infinite-mode" onclick="startGame('infinite')" class="hidden w-full sm:w-1/3 p-4 rounded-2xl border-2 border-purple-500 bg-gradient-to-br from-purple-500/10 to-indigo-500/10 text-purple-700 dark:text-purple-300 font-bold hover:from-purple-500/20 hover:to-indigo-500/20 transition flex flex-col justify-center items-center text-center gap-1 shadow-md active:scale-95">
+                        <span class="text-2xl">♾️</span>
+                        <span class="text-sm leading-tight">Infinite<br>Mode</span>
+                    </button>
+                </div>
+
+                <div class="pt-4">
+                    <button onclick="resetToHub()" class="inline-flex items-center justify-center gap-2 px-6 py-2.5 text-xs font-semibold text-slate-600 dark:text-slate-300 bg-slate-100 hover:bg-slate-200 dark:bg-slate-700 dark:hover:bg-slate-600 rounded-full transition shadow-sm active:scale-95">
+                        ← <span data-i18n="back">Terug naar overzicht</span>
+                    </button>
+                </div>
+            </div>
+        </section>
+
+        <!-- GAME 1: REKENSNELHEID INTERFACE -->
+        <section id="game1-view" class="hidden max-w-2xl mx-auto space-y-5">
+            <div class="flex items-center justify-between bg-white dark:bg-slate-800 p-4 rounded-2xl border border-slate-200 dark:border-slate-700 shadow-sm">
+                <button onclick="setupGame('rekensnelheid')" class="text-xs font-bold text-slate-500 hover:text-slate-800 dark:hover:text-white transition">
+                    ← Stop
+                </button>
+                <div class="flex items-center gap-3">
+                    <span id="g1-progress-text" class="font-bold text-xs text-slate-500 dark:text-slate-400">Som 1 van 10</span>
+                    <span id="g1-timer-text" class="font-mono font-bold text-lg text-amber-500">0.0s</span>
+                </div>
+            </div>
+
+            <div class="w-full bg-slate-200 dark:bg-slate-800 h-2 rounded-full overflow-hidden">
+                <div id="g1-progress-bar" class="bg-amber-500 h-full w-0 transition-all duration-200"></div>
+            </div>
+
+            <div id="g1-card" class="bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-3xl p-8 text-center space-y-6 shadow-xl transition-all">
+                <div id="g1-label" class="inline-block px-3 py-1 rounded-full text-[10px] font-bold uppercase tracking-widest text-amber-600 bg-amber-100 dark:bg-amber-950/80 dark:text-amber-300">
+                    OPTELLEN
+                </div>
+
+                <div id="g1-problem" class="text-4xl sm:text-6xl font-black font-mono tracking-wide py-2">
+                    --
+                </div>
+
+                <form onsubmit="submitG1Answer(event)" class="max-w-xs mx-auto space-y-4">
+                    <input type="number" id="g1-input" placeholder="0" data-i18n="g1_input" autocomplete="off" step="any"
+                           class="w-full text-center bg-slate-50 dark:bg-slate-900 border-2 border-slate-300 dark:border-slate-700 text-3xl font-extrabold rounded-2xl py-3 px-4 focus:outline-none focus:border-amber-500 transition" />
+                    <button type="submit" class="w-full py-3 bg-amber-500 hover:bg-amber-600 text-white font-bold rounded-2xl shadow-lg transition active:scale-95" data-i18n="confirm">
+                        Bevestigen (Enter)
+                    </button>
+                </form>
+            </div>
+
+            <!-- Game 1 Results Screen -->
+            <div id="g1-results" class="hidden bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-3xl p-6 sm:p-8 shadow-2xl space-y-6">
+                <div class="text-center space-y-1">
+                    <h3 class="text-2xl sm:text-3xl font-extrabold text-amber-500" data-i18n="analysis">Analyse & Resultaten</h3>
+                    <p class="text-xs text-slate-500 dark:text-slate-400" data-i18n="analysis_sub">Jouw prestatie vergeleken met de menselijke normaalverdeling.</p>
+                </div>
+
+                <div class="grid grid-cols-1 sm:grid-cols-3 gap-3" id="g1-tiers-container"></div>
+
+                <div class="bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded-2xl p-4 text-center space-y-3">
+                    <div class="flex items-center justify-between text-xs font-semibold text-slate-500 dark:text-slate-400 px-1">
+                        <span data-i18n="norm">Menselijke Normaalverdeling</span>
+                        <span id="g1-percentile-badge" class="text-amber-500 font-bold">Gemiddeld</span>
+                    </div>
+                    <div class="relative w-full h-44">
+                        <canvas id="bellCurveCanvas" class="w-full h-full"></canvas>
+                    </div>
+                </div>
+
+                <div class="grid grid-cols-2 sm:grid-cols-4 gap-3 text-center">
+                    <div class="p-3 bg-slate-100 dark:bg-slate-900 rounded-xl">
+                        <div class="text-[10px] uppercase font-bold text-slate-400" data-i18n="total_time">Totaal Tijd</div>
+                        <div id="g1-stat-total" class="text-base font-bold">0s</div>
+                    </div>
+                    <div class="p-3 bg-slate-100 dark:bg-slate-900 rounded-xl">
+                        <div class="text-[10px] uppercase font-bold text-slate-400" data-i18n="time_per">Tijd per Som</div>
+                        <div id="g1-stat-avg" class="text-base font-bold text-amber-500">0s</div>
+                    </div>
+                    <div class="p-3 bg-slate-100 dark:bg-slate-900 rounded-xl">
+                        <div class="text-[10px] uppercase font-bold text-slate-400" data-i18n="right_wrong">Goed / Fout</div>
+                        <div id="g1-stat-score" class="text-base font-bold text-emerald-500">0 / 0</div>
+                    </div>
+                    <div class="p-3 bg-slate-100 dark:bg-slate-900 rounded-xl">
+                        <div class="text-[10px] uppercase font-bold text-slate-400" data-i18n="accuracy">Nauwkeurigheid</div>
+                        <div id="g1-stat-accuracy" class="text-base font-bold text-purple-500">100%</div>
+                    </div>
+                </div>
+
+                <button onclick="setupGame('rekensnelheid')" class="w-full py-3.5 bg-amber-500 text-white font-bold rounded-2xl shadow-lg hover:bg-amber-600 transition" data-i18n="play_again">
+                    Opnieuw Spelen
+                </button>
+            </div>
+        </section>
+
+        <!-- GAME 2: MATH PEELER INTERFACE -->
+        <section id="game2-view" class="hidden max-w-3xl mx-auto flex flex-col space-y-4">
+            <div class="flex justify-between items-center bg-white dark:bg-slate-800 p-4 rounded-2xl shadow-sm border border-slate-200 dark:border-slate-700">
+                <button onclick="setupGame('peeler')" class="text-xs font-bold text-slate-500 hover:text-slate-800 dark:hover:text-white transition">
+                    ← Stop
+                </button>
+                <div class="font-bold flex items-center gap-2">
+                    <span id="g2-score-label" class="text-xs text-slate-500" data-i18n="layers">Lagen te gaan:</span>
+                    <span id="g2-score" class="text-purple-600 dark:text-purple-400 font-mono text-2xl font-black">0</span>
+                </div>
+                <div class="font-mono font-bold text-lg text-purple-500" id="g2-timer">0.0s</div>
+            </div>
+
+            <div id="g2-card" class="bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-3xl p-8 flex flex-col items-center justify-center shadow-xl relative min-h-[260px]">
+                <div id="g2-feedback" class="absolute top-4 font-bold text-xs sm:text-sm"></div>
+                <div id="g2-equation" class="text-center w-full px-4 text-3xl font-mono">Loading...</div>
+            </div>
+
+            <div class="grid grid-cols-3 sm:grid-cols-6 gap-2">
+                <button class="bg-indigo-500/10 hover:bg-indigo-500/20 text-indigo-700 dark:text-indigo-300 border border-indigo-500/30 p-3 rounded-2xl flex flex-col items-center shadow-sm transition active:scale-95" onclick="handleG2Input('s')">
+                    <span class="text-[10px] uppercase font-bold opacity-80 mb-1" data-i18n="add">Som (+)</span>
+                    <kbd class="bg-indigo-500 text-white px-2.5 py-0.5 rounded text-xs font-mono font-bold shadow-sm">S</kbd>
+                </button>
+                <button class="bg-rose-500/10 hover:bg-rose-500/20 text-rose-700 dark:text-rose-300 border border-rose-500/30 p-3 rounded-2xl flex flex-col items-center shadow-sm transition active:scale-95" onclick="handleG2Input('m')">
+                    <span class="text-[10px] uppercase font-bold opacity-80 mb-1" data-i18n="sub">Min (-)</span>
+                    <kbd class="bg-rose-500 text-white px-2.5 py-0.5 rounded text-xs font-mono font-bold shadow-sm">M</kbd>
+                </button>
+                <button class="bg-amber-500/10 hover:bg-amber-500/20 text-amber-700 dark:text-amber-300 border border-amber-500/30 p-3 rounded-2xl flex flex-col items-center shadow-sm transition active:scale-95" onclick="handleG2Input('k')">
+                    <span class="text-[10px] uppercase font-bold opacity-80 mb-1" data-i18n="mul">Keer (*)</span>
+                    <kbd class="bg-amber-500 text-white px-2.5 py-0.5 rounded text-xs font-mono font-bold shadow-sm">K</kbd>
+                </button>
+                <button class="bg-emerald-500/10 hover:bg-emerald-500/20 text-emerald-700 dark:text-emerald-300 border border-emerald-500/30 p-3 rounded-2xl flex flex-col items-center shadow-sm transition active:scale-95" onclick="handleG2Input('d')">
+                    <span class="text-[10px] uppercase font-bold opacity-80 mb-1" data-i18n="div">Delen (/)</span>
+                    <kbd class="bg-emerald-500 text-white px-2.5 py-0.5 rounded text-xs font-mono font-bold shadow-sm">D</kbd>
+                </button>
+                <button class="bg-purple-500/10 hover:bg-purple-500/20 text-purple-700 dark:text-purple-300 border border-purple-500/30 p-3 rounded-2xl flex flex-col items-center shadow-sm transition active:scale-95" onclick="handleG2Input('p')">
+                    <span class="text-[10px] uppercase font-bold opacity-80 mb-1" data-i18n="pow">Macht (^)</span>
+                    <kbd class="bg-purple-500 text-white px-2.5 py-0.5 rounded text-xs font-mono font-bold shadow-sm">P</kbd>
+                </button>
+                <button class="bg-cyan-500/10 hover:bg-cyan-500/20 text-cyan-700 dark:text-cyan-300 border border-cyan-500/30 p-3 rounded-2xl flex flex-col items-center shadow-sm transition active:scale-95" onclick="handleG2Input('r')">
+                    <span class="text-[10px] uppercase font-bold opacity-80 mb-1" data-i18n="root">Wortel (√)</span>
+                    <kbd class="bg-cyan-500 text-white px-2.5 py-0.5 rounded text-xs font-mono font-bold shadow-sm">R</kbd>
+                </button>
+            </div>
+
+            <div id="g2-results" class="hidden fixed inset-0 bg-slate-900/80 backdrop-blur-md z-50 flex items-center justify-center p-4">
+                <div class="bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-3xl p-8 max-w-md w-full text-center space-y-5 shadow-2xl">
+                    <h3 id="g2-res-title" class="text-3xl font-black text-purple-500">Opgelost!</h3>
+                    <p id="g2-res-timer-box" class="text-sm text-slate-500"><span data-i18n="time">Tijd:</span> <span id="g2-res-tijd" class="font-bold text-slate-900 dark:text-white">0s</span></p>
+                    <div id="g2-res-score-box" class="hidden text-center">
+                        <div class="text-xs text-slate-500 uppercase tracking-widest font-semibold" data-i18n="achieved">Behaalde Infinite Score</div>
+                        <div id="g2-res-score-val" class="text-5xl font-black font-mono my-3">0</div>
+                    </div>
+                    <button onclick="setupGame('peeler')" class="w-full py-3.5 bg-purple-600 text-white rounded-2xl font-bold shadow-lg hover:bg-purple-700 transition" data-i18n="play_again">
+                        Opnieuw Spelen
+                    </button>
+                </div>
+            </div>
+        </section>
+
+        <!-- GAME 3: KUBUS FUSIE -->
+        <section id="kubus-view" class="hidden max-w-3xl mx-auto" aria-labelledby="kb-heading">
+            <h2 id="kb-heading" class="sr-only" data-i18n="kb_title">Kubus Fusie</h2>
+            <div class="kb-stage">
+                <div class="kb-top">
+                    <div class="kb-coinbox">
+                        <span class="kb-coin-icon" aria-hidden="true">🪙</span>
+                        <div>
+                            <div class="kb-label" data-i18n="kb_coins">Munten</div>
+                            <div id="kb-coins" class="kb-coin">100</div>
+                        </div>
+                    </div>
+                    <div class="kb-actions">
+                        <button type="button" class="kb-btn" onclick="kbInit()" data-i18n="kb_restart">🔄 Herstart</button>
+                        <button type="button" class="kb-btn kb-btn-ghost" onclick="resetToHub()" data-i18n="kb_home">← Terug</button>
+                    </div>
+                </div>
+
+                <div class="kb-panel">
+                    <h3 class="kb-label" data-i18n="kb_shop">🛒 Winkel</h3>
+                    <div id="kb-shop" class="kb-grid" role="group"></div>
+                </div>
+
+                <p id="kb-inspect" class="kb-inspect"></p>
+                <p id="kb-status" class="kb-status" role="status" aria-live="polite"></p>
+
+                <div class="kb-panel">
+                    <h3 class="kb-label" data-i18n="kb_board">Speelveld</h3>
+                    <div class="kb-board-frame">
+                        <div id="kb-board" class="kb-grid" role="group"></div>
+                        <div id="kb-fx" class="kb-fx" aria-hidden="true"></div>
+                    </div>
+                </div>
+
+                <details class="kb-how">
+                    <summary data-i18n="kb_how">Hoe werkt het?</summary>
+                    <ul>
+                        <li data-i18n="kb_r1"></li>
+                        <li data-i18n="kb_r2"></li>
+                        <li data-i18n="kb_r3"></li>
+                        <li data-i18n="kb_r4"></li>
+                        <li data-i18n="kb_r5"></li>
+                        <li data-i18n="kb_r6"></li>
+                    </ul>
+                </details>
+            </div>
+        </section>
+
+        <!-- VIEW 4: FORMULES & TABELLEN -->
+        <section id="formules-view" class="hidden max-w-4xl mx-auto space-y-6">
+            <div class="bg-white dark:bg-slate-800 rounded-3xl p-6 sm:p-8 border border-slate-200 dark:border-slate-700 shadow-xl space-y-6">
+                
+                <div class="flex flex-wrap items-center justify-between gap-4 border-b border-slate-100 dark:border-slate-700 pb-4">
+                    <div>
+                        <h2 class="text-2xl font-extrabold text-blue-600 dark:text-blue-400" data-i18n="f_header">Formules, Tabellen & Grafieken</h2>
+                        <p class="text-xs text-slate-500 dark:text-slate-400" data-i18n="f_sub">Kies een functietype, pas de parameters aan en vul de ontbrekende tabelwaarden in.</p>
+                    </div>
+                    <button onclick="resetToHub()" class="px-3 py-1.5 bg-slate-100 dark:bg-slate-700 text-xs font-semibold rounded-xl hover:bg-slate-200 transition">
+                        ← <span data-i18n="back">Home</span>
+                    </button>
+                </div>
+
+                <div class="grid grid-cols-2 sm:grid-cols-4 gap-2 text-xs font-bold">
+                    <button onclick="setFormulaType('linear')" id="f-btn-linear" class="p-3 rounded-2xl border-2 border-blue-500 bg-blue-50 dark:bg-blue-950/40 text-blue-600 dark:text-blue-300">
+                        Lineair<br><span class="text-[10px] font-normal opacity-80">y = ax + b</span>
+                    </button>
+                    <button onclick="setFormulaType('quadratic')" id="f-btn-quadratic" class="p-3 rounded-2xl border-2 border-slate-200 dark:border-slate-700 text-slate-600 dark:text-slate-300 hover:border-blue-300">
+                        Kwadratisch<br><span class="text-[10px] font-normal opacity-80">y = ax² + bx + c</span>
+                    </button>
+                    <button onclick="setFormulaType('exponential')" id="f-btn-exponential" class="p-3 rounded-2xl border-2 border-slate-200 dark:border-slate-700 text-slate-600 dark:text-slate-300 hover:border-blue-300">
+                        Exponentieel<br><span class="text-[10px] font-normal opacity-80">y = b · gⁿ</span>
+                    </button>
+                    <button onclick="setFormulaType('inverse')" id="f-btn-inverse" class="p-3 rounded-2xl border-2 border-slate-200 dark:border-slate-700 text-slate-600 dark:text-slate-300 hover:border-blue-300">
+                        Omgekeerd<br><span class="text-[10px] font-normal opacity-80">y = a / x</span>
+                    </button>
+                </div>
+
+                <div class="grid grid-cols-1 md:grid-cols-3 gap-6 items-center bg-slate-50 dark:bg-slate-900 p-5 rounded-2xl border border-slate-200 dark:border-slate-700">
+                    <div class="md:col-span-1 space-y-4">
+                        <div class="text-xs uppercase tracking-wider font-bold text-slate-400" data-i18n="f_current">Actieve Formule</div>
+                        <div id="f-latex-display" class="text-xl font-mono text-blue-600 dark:text-blue-400 font-bold min-h-[40px] flex items-center">
+                            y = 2x - 3
+                        </div>
+                        
+                        <div class="space-y-2">
+                            <label class="text-xs font-semibold text-slate-500 block">Parameter a: <span id="param-a-val" class="font-bold text-blue-500">2</span></label>
+                            <input type="range" id="slider-a" min="-5" max="5" value="2" step="1" oninput="updateFormulaParams()" class="w-full accent-blue-600">
+                            
+                            <label id="label-param-b" class="text-xs font-semibold text-slate-500 block">Parameter b: <span id="param-b-val" class="font-bold text-blue-500">-3</span></label>
+                            <input type="range" id="slider-b" min="-5" max="5" value="-3" step="1" oninput="updateFormulaParams()" class="w-full accent-blue-600">
+                        </div>
+                    </div>
+
+                    <div class="md:col-span-2 relative h-56 bg-white dark:bg-slate-950 rounded-2xl border border-slate-200 dark:border-slate-800 p-2 overflow-hidden shadow-inner flex items-center justify-center">
+                        <canvas id="formulaCanvas" class="w-full h-full"></canvas>
+                    </div>
+                </div>
+
+                <div class="space-y-4">
+                    <div class="flex items-center justify-between">
+                        <h3 class="font-bold text-sm text-slate-800 dark:text-slate-200" data-i18n="f_table_title">Vul de ontbrekende tabelwaarden in:</h3>
+                        <button onclick="newFormulaTask()" class="text-xs text-blue-500 font-bold hover:underline" data-i18n="f_new_task">Nieuwe Opgave</button>
+                    </div>
+
+                    <div class="overflow-x-auto">
+                        <table class="w-full border-collapse text-center text-xs font-mono">
+                            <thead>
+                                <tr class="bg-blue-500/10 text-blue-700 dark:text-blue-300 font-bold border border-blue-200 dark:border-blue-800">
+                                    <th class="p-3 border border-blue-200 dark:border-blue-800">x</th>
+                                    <th class="p-3 border border-blue-200 dark:border-blue-800">-2</th>
+                                    <th class="p-3 border border-blue-200 dark:border-blue-800">-1</th>
+                                    <th class="p-3 border border-blue-200 dark:border-blue-800">0</th>
+                                    <th class="p-3 border border-blue-200 dark:border-blue-800">1</th>
+                                    <th class="p-3 border border-blue-200 dark:border-blue-800">2</th>
+                                </tr>
+                            </thead>
+                            <tbody id="f-table-body">
+                            </tbody>
+                        </table>
+                    </div>
+
+                    <div class="flex gap-3">
+                        <button onclick="checkFormulaTable()" class="flex-1 py-3 bg-blue-600 hover:bg-blue-700 text-white font-bold rounded-2xl text-xs shadow-lg transition" data-i18n="check">
+                            Controleer Tabel
+                        </button>
+                    </div>
+                    <div id="f-feedback" class="hidden text-xs font-bold p-3 rounded-xl"></div>
+                </div>
+
+            </div>
+        </section>
+
+        <!-- VIEW 5: BREUKEN & PERCENTAGES -->
+        <section id="breuken-view" class="hidden max-w-4xl mx-auto space-y-6">
+            <div class="bg-white dark:bg-slate-800 rounded-3xl p-6 sm:p-8 border border-slate-200 dark:border-slate-700 shadow-xl space-y-6">
+                
+                <div class="flex flex-wrap items-center justify-between gap-4 border-b border-slate-100 dark:border-slate-700 pb-4">
+                    <div>
+                        <h2 class="text-2xl font-extrabold text-pink-600 dark:text-pink-400" data-i18n="br_header">Breuken, Decimalen & Percentages</h2>
+                        <p class="text-xs text-slate-500 dark:text-slate-400" data-i18n="br_sub">Visuele verhoudingen en directe conversie tussen teller/noemer, kommagetallen en procenten.</p>
+                    </div>
+                    <button onclick="resetToHub()" class="px-3 py-1.5 bg-slate-100 dark:bg-slate-700 text-xs font-semibold rounded-xl hover:bg-slate-200 transition">
+                        ← <span data-i18n="back">Home</span>
+                    </button>
+                </div>
+
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-6 bg-pink-50/50 dark:bg-pink-950/20 p-6 rounded-3xl border border-pink-200/50 dark:border-pink-900/40 items-center">
+                    
+                    <div class="flex flex-col items-center justify-center space-y-3">
+                        <div class="relative w-48 h-48">
+                            <canvas id="fractionCanvas" class="w-full h-full"></canvas>
+                        </div>
+                        <div class="flex gap-4 items-center">
+                            <div class="text-center">
+                                <span class="text-[10px] uppercase font-bold text-slate-400 block" data-i18n="br_num">Teller (boven)</span>
+                                <input type="number" id="br-teller" value="3" min="1" max="12" oninput="updateFractionVis()" class="w-16 text-center font-bold text-lg p-1 rounded-xl border border-pink-300 dark:border-pink-700 bg-white dark:bg-slate-900">
+                            </div>
+                            <span class="text-2xl font-bold text-pink-500">/</span>
+                            <div class="text-center">
+                                <span class="text-[10px] uppercase font-bold text-slate-400 block" data-i18n="br_den">Noemer (onder)</span>
+                                <input type="number" id="br-noemer" value="8" min="1" max="12" oninput="updateFractionVis()" class="w-16 text-center font-bold text-lg p-1 rounded-xl border border-pink-300 dark:border-pink-700 bg-white dark:bg-slate-900">
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="space-y-4">
+                        <div class="p-4 bg-white dark:bg-slate-900 rounded-2xl border border-pink-200 dark:border-pink-900 shadow-sm flex items-center justify-between">
+                            <div>
+                                <span class="text-xs text-slate-400 font-bold uppercase block" data-i18n="br_dec">Decimaal Getal</span>
+                                <span id="br-val-dec" class="text-2xl font-black text-pink-600 dark:text-pink-400 font-mono">0.375</span>
+                            </div>
+                            <span class="text-3xl">🔢</span>
+                        </div>
+
+                        <div class="p-4 bg-white dark:bg-slate-900 rounded-2xl border border-pink-200 dark:border-pink-900 shadow-sm flex items-center justify-between">
+                            <div>
+                                <span class="text-xs text-slate-400 font-bold uppercase block" data-i18n="br_perc">Percentage</span>
+                                <span id="br-val-perc" class="text-2xl font-black text-pink-600 dark:text-pink-400 font-mono">37.5%</span>
+                            </div>
+                            <span class="text-3xl">📊</span>
+                        </div>
+
+                        <div class="p-4 bg-white dark:bg-slate-900 rounded-2xl border border-pink-200 dark:border-pink-900 shadow-sm flex items-center justify-between">
+                            <div>
+                                <span class="text-xs text-slate-400 font-bold uppercase block" data-i18n="br_simp">Vereenvoudigd</span>
+                                <span id="br-val-simp" class="text-2xl font-black text-pink-600 dark:text-pink-400 font-mono">3 / 8</span>
+                            </div>
+                            <span class="text-3xl">✂️</span>
+                        </div>
+                    </div>
+
+                </div>
+
+                <div class="p-6 bg-slate-50 dark:bg-slate-900 rounded-3xl border border-slate-200 dark:border-slate-700 space-y-4">
+                    <div class="flex items-center justify-between">
+                        <h3 class="font-bold text-sm text-slate-800 dark:text-slate-200" data-i18n="br_quiz_title">Conversie Oefening</h3>
+                        <span id="br-quiz-score" class="text-xs font-bold text-pink-500">Score: 0</span>
+                    </div>
+
+                    <div id="br-quiz-prompt" class="text-lg font-bold text-center py-3 bg-white dark:bg-slate-800 rounded-2xl border border-slate-200 dark:border-slate-700">
+                        Reken om: Hoeveel procent is 3/5?
+                    </div>
+
+                    <form onsubmit="checkFractionQuiz(event)" class="flex gap-3">
+                        <input type="number" id="br-quiz-input" placeholder="Jouw antwoord..." step="any" autocomplete="off" class="flex-1 p-3 rounded-2xl border-2 border-slate-300 dark:border-slate-700 font-bold text-center bg-white dark:bg-slate-800">
+                        <button type="submit" class="px-6 py-3 bg-pink-600 hover:bg-pink-700 text-white font-bold rounded-2xl text-xs shadow-lg transition" data-i18n="check">
+                            Controleer
+                        </button>
+                    </form>
+                    <div id="br-quiz-feedback" class="hidden text-xs font-bold p-3 rounded-xl text-center"></div>
+                </div>
+
+            </div>
+        </section>
+
+        <!-- VIEW 6: STATISTIEK & DIAGRAMMEN -->
+        <section id="statistiek-view" class="hidden max-w-4xl mx-auto space-y-6">
+            <div class="bg-white dark:bg-slate-800 rounded-3xl p-6 sm:p-8 border border-slate-200 dark:border-slate-700 shadow-xl space-y-6">
+                
+                <div class="flex flex-wrap items-center justify-between gap-4 border-b border-slate-100 dark:border-slate-700 pb-4">
+                    <div>
+                        <h2 class="text-2xl font-extrabold text-teal-600 dark:text-teal-400" data-i18n="st_header">Statistiek & Centrummaten</h2>
+                        <p class="text-xs text-slate-500 dark:text-slate-400" data-i18n="st_sub">Analyseer een getallenreeks: bereken gemiddelde, mediaan, modus, bereik en bekijk het histogram.</p>
+                    </div>
+                    <button onclick="resetToHub()" class="px-3 py-1.5 bg-slate-100 dark:bg-slate-700 text-xs font-semibold rounded-xl hover:bg-slate-200 transition">
+                        ← <span data-i18n="back">Home</span>
+                    </button>
+                </div>
+
+                <div class="bg-teal-50/50 dark:bg-teal-950/20 p-5 rounded-2xl border border-teal-200/50 dark:border-teal-900/40 space-y-3">
+                    <div class="flex justify-between items-center text-xs font-bold text-teal-800 dark:text-teal-300">
+                        <span data-i18n="st_dataset">Getallenreeks (Dataset):</span>
+                        <button onclick="generateNewDataset()" class="text-teal-600 hover:underline flex items-center gap-1" data-i18n="st_new">
+                            🔄 Nieuwe Reeks
+                        </button>
+                    </div>
+                    <div id="st-dataset-display" class="text-lg sm:text-xl font-mono font-black text-slate-800 dark:text-slate-100 tracking-wider bg-white dark:bg-slate-900 p-3 rounded-xl border border-teal-200 dark:border-teal-800 text-center">
+                        4, 7, 7, 8, 12, 15, 18, 22
+                    </div>
+                </div>
+
+                <div class="bg-slate-50 dark:bg-slate-900 p-4 rounded-2xl border border-slate-200 dark:border-slate-700 space-y-2">
+                    <span class="text-xs font-bold text-slate-400 uppercase tracking-wider block" data-i18n="st_chart">Frequentiediagram (Histogram)</span>
+                    <div class="h-48 w-full">
+                        <canvas id="statsCanvas" class="w-full h-full"></canvas>
+                    </div>
+                </div>
+
+                <div class="grid grid-cols-2 sm:grid-cols-4 gap-3">
+                    <div class="p-3 bg-slate-50 dark:bg-slate-900 rounded-2xl border border-slate-200 dark:border-slate-700 space-y-1">
+                        <label class="text-[11px] font-bold text-slate-400 uppercase block" data-i18n="st_mean">Gemiddelde</label>
+                        <input type="number" id="st-input-mean" step="0.1" placeholder="?" class="w-full p-2 text-center font-bold text-base bg-white dark:bg-slate-800 rounded-xl border border-slate-300 dark:border-slate-700">
+                    </div>
+                    <div class="p-3 bg-slate-50 dark:bg-slate-900 rounded-2xl border border-slate-200 dark:border-slate-700 space-y-1">
+                        <label class="text-[11px] font-bold text-slate-400 uppercase block" data-i18n="st_median">Mediaan</label>
+                        <input type="number" id="st-input-median" step="0.5" placeholder="?" class="w-full p-2 text-center font-bold text-base bg-white dark:bg-slate-800 rounded-xl border border-slate-300 dark:border-slate-700">
+                    </div>
+                    <div class="p-3 bg-slate-50 dark:bg-slate-900 rounded-2xl border border-slate-200 dark:border-slate-700 space-y-1">
+                        <label class="text-[11px] font-bold text-slate-400 uppercase block" data-i18n="st_mode">Modus</label>
+                        <input type="number" id="st-input-mode" placeholder="?" class="w-full p-2 text-center font-bold text-base bg-white dark:bg-slate-800 rounded-xl border border-slate-300 dark:border-slate-700">
+                    </div>
+                    <div class="p-3 bg-slate-50 dark:bg-slate-900 rounded-2xl border border-slate-200 dark:border-slate-700 space-y-1">
+                        <label class="text-[11px] font-bold text-slate-400 uppercase block" data-i18n="st_range">Spreidingsbreedte</label>
+                        <input type="number" id="st-input-range" placeholder="?" class="w-full p-2 text-center font-bold text-base bg-white dark:bg-slate-800 rounded-xl border border-slate-300 dark:border-slate-700">
+                    </div>
+                </div>
+
+                <button onclick="checkStatsAnswers()" class="w-full py-3.5 bg-teal-600 hover:bg-teal-700 text-white font-bold rounded-2xl text-xs shadow-lg transition" data-i18n="check">
+                    Controleer Berekeningen
+                </button>
+                <div id="st-feedback" class="hidden text-xs font-bold p-3 rounded-xl text-center"></div>
+
+            </div>
+        </section>
+
+        <!-- VIEW 7: THEORIE & FORMULEKAART -->
+        <section id="theorie-view" class="hidden max-w-4xl mx-auto space-y-6">
+            <div class="bg-white dark:bg-slate-800 rounded-3xl p-6 sm:p-8 border border-slate-200 dark:border-slate-700 shadow-xl space-y-6">
+                
+                <div class="flex flex-wrap items-center justify-between gap-4 border-b border-slate-100 dark:border-slate-700 pb-4">
+                    <div>
+                        <h2 class="text-2xl font-extrabold text-indigo-600 dark:text-indigo-400" data-i18n="th_header">Formulekaart & Theorie</h2>
+                        <p class="text-xs text-slate-500 dark:text-slate-400" data-i18n="th_sub">Interactief naslagwerk voor wiskunde op het VO (VMBO, HAVO & VWO).</p>
+                    </div>
+                    <button onclick="resetToHub()" class="px-3 py-1.5 bg-slate-100 dark:bg-slate-700 text-xs font-semibold rounded-xl hover:bg-slate-200 transition">
+                        ← <span data-i18n="back">Home</span>
+                    </button>
+                </div>
+
+                <div class="relative">
+                    <input type="text" id="th-search-input" onkeyup="filterTheoryCards()" placeholder="Zoek op onderwerp (bijv. Pythagoras, ABC-formule, procenten)..." data-i18n="th_search"
+                           class="w-full p-3 pl-10 rounded-2xl border-2 border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-900 text-xs font-medium focus:outline-none focus:border-indigo-500 transition">
+                    <span class="absolute left-3.5 top-3.5 text-slate-400">🔍</span>
+                </div>
+
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-4" id="theory-cards-grid">
+                    <div class="theory-card p-5 bg-slate-50 dark:bg-slate-900 rounded-2xl border border-slate-200 dark:border-slate-700 space-y-3">
+                        <div class="flex items-center gap-2">
+                            <span class="text-xl">🧅</span>
+                            <h3 class="font-bold text-sm text-indigo-600 dark:text-indigo-400">Algebra & Vergelijkingen</h3>
+                        </div>
+                        <ul class="text-xs space-y-2 text-slate-600 dark:text-slate-300">
+                            <li><strong class="text-slate-900 dark:text-white">Haakjes wegwerken:</strong> <br> \(a(b + c) = ab + ac\)</li>
+                            <li><strong class="text-slate-900 dark:text-white">Merkwaardige producten:</strong> <br> \((a + b)^2 = a^2 + 2ab + b^2\)</li>
+                            <li><strong class="text-slate-900 dark:text-white">ABC-formule:</strong> <br> \(x = \frac{-b \pm \sqrt{b^2 - 4ac}}{2a}\)</li>
+                        </ul>
+                    </div>
+
+                    <div class="theory-card p-5 bg-slate-50 dark:bg-slate-900 rounded-2xl border border-slate-200 dark:border-slate-700 space-y-3">
+                        <div class="flex items-center gap-2">
+                            <span class="text-xl">⚡</span>
+                            <h3 class="font-bold text-sm text-amber-600 dark:text-amber-400">Rekenen & Percentages</h3>
+                        </div>
+                        <ul class="text-xs space-y-2 text-slate-600 dark:text-slate-300">
+                            <li><strong class="text-slate-900 dark:text-white">Procentuele toename:</strong> <br> \(\text{Nieuw} = \text{Oud} \times \left(1 + \frac{\%}{100}\right)\)</li>
+                            <li><strong class="text-slate-900 dark:text-white">Breuk vermenigvuldigen:</strong> <br> \(\frac{a}{b} \times \frac{c}{d} = \frac{a \cdot c}{b \cdot d}\)</li>
+                            <li><strong class="text-slate-900 dark:text-white">Wetenschappelijke notatie:</strong> <br> \(a \times 10^n \quad (1 \le a < 10)\)</li>
+                        </ul>
+                    </div>
+
+                    <div class="theory-card p-5 bg-slate-50 dark:bg-slate-900 rounded-2xl border border-slate-200 dark:border-slate-700 space-y-3">
+                        <div class="flex items-center gap-2">
+                            <span class="text-xl">📐</span>
+                            <h3 class="font-bold text-sm text-emerald-600 dark:text-emerald-400">Meetkunde & Trigonometrie</h3>
+                        </div>
+                        <ul class="text-xs space-y-2 text-slate-600 dark:text-slate-300">
+                            <li><strong class="text-slate-900 dark:text-white">Stelling van Pythagoras:</strong> <br> \(a^2 + b^2 = c^2\)</li>
+                            <li><strong class="text-slate-900 dark:text-white">SOS-CAS-TOA:</strong> <br> \(\sin(\alpha) = \frac{\text{Overs}}{Schuin}, \quad \cos(\alpha) = \frac{\text{Aanl}}{Schuin}\)</li>
+                            <li><strong class="text-slate-900 dark:text-white">Oppervlakte Cirkel:</strong> <br> \(A = \pi \cdot r^2\)</li>
+                        </ul>
+                    </div>
+
+                    <div class="theory-card p-5 bg-slate-50 dark:bg-slate-900 rounded-2xl border border-slate-200 dark:border-slate-700 space-y-3">
+                        <div class="flex items-center gap-2">
+                            <span class="text-xl">📊</span>
+                            <h3 class="font-bold text-sm text-teal-600 dark:text-teal-400">Statistiek & Centrummaten</h3>
+                        </div>
+                        <ul class="text-xs space-y-2 text-slate-600 dark:text-slate-300">
+                            <li><strong class="text-slate-900 dark:text-white">Gemiddelde:</strong> <br> \(\bar{x} = \frac{\sum x_i}{N}\)</li>
+                            <li><strong class="text-slate-900 dark:text-white">Spreidingsbreedte:</strong> <br> \(R = x_{\max} - x_{\min}\)</li>
+                            <li><strong class="text-slate-900 dark:text-white">Interkwartielafstand:</strong> <br> \(IQR = Q_3 - Q_1\)</li>
+                        </ul>
+                    </div>
+                </div>
+
+            </div>
+        </section>
+
+        <!-- VIEW 8: VOORTGANG & PRESTATIES -->
+        <section id="voortgang-view" class="hidden max-w-4xl mx-auto space-y-6">
+            <div class="bg-white dark:bg-slate-800 rounded-3xl p-6 sm:p-8 border border-slate-200 dark:border-slate-700 shadow-xl space-y-6">
+                
+                <div class="flex flex-wrap items-center justify-between gap-4 border-b border-slate-100 dark:border-slate-700 pb-4">
+                    <div>
+                        <h2 class="text-2xl font-extrabold text-amber-500" data-i18n="pr_header">Voortgang & Prestaties</h2>
+                        <p class="text-xs text-slate-500 dark:text-slate-400" data-i18n="pr_sub">Analyseer je vaardigheden per onderdeel en bekijk je behaalde prestatie-badges.</p>
+                    </div>
+                    <button onclick="resetToHub()" class="px-3 py-1.5 bg-slate-100 dark:bg-slate-700 text-xs font-semibold rounded-xl hover:bg-slate-200 transition">
+                        ← <span data-i18n="back">Home</span>
+                    </button>
+                </div>
+
+                <div class="grid grid-cols-2 sm:grid-cols-4 gap-4">
+                    <div class="p-4 bg-slate-50 dark:bg-slate-900 rounded-2xl border border-slate-200 dark:border-slate-700 text-center">
+                        <span class="text-[10px] uppercase font-bold text-slate-400 block" data-i18n="pr_total">Totaal Opgelost</span>
+                        <span id="pr-total-val" class="text-2xl font-black text-indigo-500 font-mono">142</span>
+                    </div>
+                    <div class="p-4 bg-slate-50 dark:bg-slate-900 rounded-2xl border border-slate-200 dark:border-slate-700 text-center">
+                        <span class="text-[10px] uppercase font-bold text-slate-400 block" data-i18n="pr_acc">Nauwkeurigheid</span>
+                        <span id="pr-acc-val" class="text-2xl font-black text-emerald-500 font-mono">94%</span>
+                    </div>
+                    <div class="p-4 bg-slate-50 dark:bg-slate-900 rounded-2xl border border-slate-200 dark:border-slate-700 text-center">
+                        <span class="text-[10px] uppercase font-bold text-slate-400 block" data-i18n="pr_streak">Lopende Streak</span>
+                        <span id="pr-streak-val" class="text-2xl font-black text-amber-500 font-mono">5 Dagen</span>
+                    </div>
+                    <div class="p-4 bg-slate-50 dark:bg-slate-900 rounded-2xl border border-slate-200 dark:border-slate-700 text-center">
+                        <span class="text-[10px] uppercase font-bold text-slate-400 block">Totaal XP</span>
+                        <span id="pr-xp-val" class="text-2xl font-black text-purple-500 font-mono">1,450</span>
+                    </div>
+                </div>
+
+                <div class="p-5 bg-slate-50 dark:bg-slate-900 rounded-2xl border border-slate-200 dark:border-slate-700 space-y-4">
+                    <h3 class="font-bold text-sm text-slate-800 dark:text-slate-200" data-i18n="pr_skills">Vaardigheidsniveau per Onderdeel</h3>
+                    
+                    <div class="space-y-3 text-xs font-semibold">
+                        <div>
+                            <div class="flex justify-between mb-1">
+                                <span>⚡ RekenSnelheid</span>
+                                <span class="text-amber-500 font-bold">88%</span>
+                            </div>
+                            <div class="w-full bg-slate-200 dark:bg-slate-800 h-2.5 rounded-full overflow-hidden">
+                                <div class="bg-amber-500 h-full w-[88%] rounded-full"></div>
+                            </div>
+                        </div>
+
+                        <div>
+                            <div class="flex justify-between mb-1">
+                                <span>🧅 Math Peeler (Algebra)</span>
+                                <span class="text-purple-500 font-bold">75%</span>
+                            </div>
+                            <div class="w-full bg-slate-200 dark:bg-slate-800 h-2.5 rounded-full overflow-hidden">
+                                <div class="bg-purple-500 h-full w-[75%] rounded-full"></div>
+                            </div>
+                        </div>
+
+                        <div>
+                            <div class="flex justify-between mb-1">
+                                <span>🧊 Kubus Fusie</span>
+                                <span class="text-emerald-500 font-bold">92%</span>
+                            </div>
+                            <div class="w-full bg-slate-200 dark:bg-slate-800 h-2.5 rounded-full overflow-hidden">
+                                <div class="bg-emerald-500 h-full w-[92%] rounded-full"></div>
+                            </div>
+                        </div>
+
+                        <div>
+                            <div class="flex justify-between mb-1">
+                                <span>📈 Formules & Tabellen</span>
+                                <span class="text-blue-500 font-bold">80%</span>
+                            </div>
+                            <div class="w-full bg-slate-200 dark:bg-slate-800 h-2.5 rounded-full overflow-hidden">
+                                <div class="bg-blue-500 h-full w-[80%] rounded-full"></div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="space-y-3">
+                    <h3 class="font-bold text-sm text-slate-800 dark:text-slate-200" data-i18n="pr_badges">Behaalde Badges</h3>
+                    <div class="grid grid-cols-2 sm:grid-cols-4 gap-3 text-center text-xs">
+                        <div class="p-4 bg-slate-50 dark:bg-slate-900 rounded-2xl border border-slate-200 dark:border-slate-700 space-y-1">
+                            <span class="text-3xl block">⚡</span>
+                            <span class="font-bold text-slate-800 dark:text-slate-200 block">Speed Demon</span>
+                            <span class="text-[10px] text-slate-400 block">&lt; 2.5s Gemiddeld</span>
+                        </div>
+                        <div class="p-4 bg-slate-50 dark:bg-slate-900 rounded-2xl border border-slate-200 dark:border-slate-700 space-y-1">
+                            <span class="text-3xl block">🧅</span>
+                            <span class="font-bold text-slate-800 dark:text-slate-200 block">Peel Master</span>
+                            <span class="text-[10px] text-slate-400 block">10 Lagen Infinite</span>
+                        </div>
+                        <div class="p-4 bg-slate-50 dark:bg-slate-900 rounded-2xl border border-slate-200 dark:border-slate-700 space-y-1">
+                            <span class="text-3xl block">🧊</span>
+                            <span class="font-bold text-slate-800 dark:text-slate-200 block">Cube Boss</span>
+                            <span class="text-[10px] text-slate-400 block">1.000 Munten</span>
+                        </div>
+                        <div class="p-4 bg-slate-50 dark:bg-slate-900 opacity-50 rounded-2xl border border-dashed border-slate-300 dark:border-slate-700 space-y-1">
+                            <span class="text-3xl block">👑</span>
+                            <span class="font-bold text-slate-800 dark:text-slate-200 block">Math Legend</span>
+                            <span class="text-[10px] text-slate-400 block">Bereik 5,000 XP</span>
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+        </section>
+
+    </main>
+
+    <!-- FOOTER -->
+    <footer class="w-full border-t border-slate-200 dark:border-slate-800 py-4 text-center text-xs text-slate-500 dark:text-slate-400">
+        Math & Reken Hub &copy; 2026 • Onderwijs Wiskunde & Rekenen • Accessible VO Platform
+    </footer>
+
+    <!-- JAVASCRIPT LOGIC -->
+    <script>
+        // --- TRANSLATIONS (I18N) ---
+        const translations = {
+            nl: {
+                subtitle: "VWO & HAVO Oefenplatform", home: "🏠 Home", a11y: "Toegankelijkheid", theme: "Thema",
+                light: "Licht", dark: "Donker", font: "Lettertype",
+                nav_home: "🏠 Home", nav_speed: "RekenSnelheid", nav_peeler: "Math Peeler",
+                nav_formulas: "Formules & Tabellen", nav_fractions: "Breuken & %", nav_stats: "Statistiek", nav_theory: "📚 Theorie", nav_progress: "🏆 Voortgang",
+                stat_streak: "Streak:", stat_speed: "Snelheid:",
+                welcome_title: "Welkom bij Math & Reken Hub", hub_tag: "Oefen & Verbeter", hub_desc: "Train in 5 minuten je rekenvaardigheid, algebraïsch inzicht, formules, breuken en statistiek voor VMBO, HAVO & VWO!",
+                g1_title: "RekenSnelheid", g1_sub: "Snelheid & Accuraatheid", g1_desc: "Los sommen op tegen de klok en vergelijk je snelheid met de menselijke normaalverdeling.", g1_btn: "Speel RekenSnelheid",
+                g2_sub: "Algebraïsch Inzicht", g2_desc: "Pel ingewikkelde formules van buiten naar binnen af. Inclusief een ♾️ Infinite Mode!", g2_btn: "Speel Math Peeler",
+                kb_title: "Kubus Fusie", kb_sub: "Strategisch Rekenen", kb_desc: "Koop kubussen, laat ze vallen en smelt ze samen. Optellen, vermenigvuldigen en slim plannen levert de meeste munten op!", kb_btn: "Speel Kubus Fusie",
+                kb_coins: "Munten", kb_restart: "🔄 Herstart", kb_home: "← Terug", kb_shop: "🛒 Winkel", kb_board: "Speelveld", kb_shop_aria: "Winkel", kb_board_aria: "Speelveld met 4 kolommen",
+                kb_how: "Hoe werkt het?",
+                kb_r1: "Je start met 100 munten. Klik op een kubus in de winkel om hem te kopen. Hij valt in een kolom omlaag tot de bodem of tot hij op een andere kubus landt.",
+                kb_r2: "Beweeg je muis over een kubus (of tik erop) om zijn Prijs, Level en Type te zien. Prijs = level − type, nooit minder dan 0.",
+                kb_r3: "Staan twee kubussen met hetzelfde type naast elkaar, dan smelten ze vanzelf samen: de levels worden opgeteld, de oudste verdwijnt en je krijgt (nieuw level − type) munten.",
+                kb_r4: "Sleep een kubus naar een buurkubus om ze te mengen: types en levels worden met elkaar vermenigvuldigd. De kubus waar je naartoe sleept blijft over.",
+                kb_r5: "Elke kubus heeft een verborgen fusieteller. Samensmelten telt voor 1, mengen voor 2. Bij 3 ontploft de kubus en krijg je evenveel munten als zijn level.",
+                kb_r6: "Toetsenbord: pijltjestoetsen gaan naar de buurkubus, Shift + pijltje mengt in die richting.",
+                kb_idle: "Beweeg over een kubus, of tik erop, om zijn stats te zien.", kb_price: "Prijs", kb_level: "Level", kb_type: "Type",
+                kb_cube_label: "Kubus. Prijs {p}, level {l}, type {ty}.",
+                kb_ready: "Klaar om te spelen. Je hebt {c} munten.", kb_bought: "Gekocht voor {p} munten.", kb_free: "Gratis gekocht.",
+                kb_toocostly: "Te duur: prijs {p}, je hebt {c} munten.", kb_full: "Het speelveld is vol. Meng of smelt eerst kubussen samen.",
+                kb_merge: "Samengesmolten: +{n} munten.", kb_mix: "Gemengd! Nu type {ty}, level {l}. De volgende fusie laat hem ontploffen.",
+                kb_boom: "Boem! De kubus ontploft: +{n} munten.", kb_need: "Sleep naar een kubus ernaast om te mengen.",
+                g4_title: "Formules & Tabellen", g4_sub: "Grafieken & Functies", g4_desc: "Onderzoek lineaire, kwadratische en exponentiële formules. Vul tabellen in en bekijk de grafiek!", g4_btn: "Open Formules & Tabellen",
+                g5_title: "Breuken & Percentages", g5_sub: "Visueel & Verhoudingen", g5_desc: "Converteer breuken, decimalen en percentages met interactieve visuele cirkel- en balkdiagrammen.", g5_btn: "Open Breuken & %",
+                g6_title: "Statistiek & Diagrammen", g6_sub: "Data & Centrummaten", g6_desc: "Bereken gemiddelde, mediaan, modus en spreiding met automatische histogrammen en boxplots.", g6_btn: "Open Statistiek & Diagrammen",
+                setup_title: "Kies je niveau", setup_desc: "Selecteer de gewenste moeilijkheidsgraad om te starten.", setup_hs: "High Score Infinite Mode",
+                lvl1: "Niveau 1", lvl1_sub: "Makkelijk", lvl2: "Niveau 2", lvl2_sub: "Gemiddeld", lvl3: "Niveau 3", lvl3_sub: "Moeilijk", back: "Terug naar overzicht",
+                g1_input: "0", confirm: "Bevestigen (Enter)", analysis: "Analyse & Resultaten", analysis_sub: "Jouw prestatie vergeleken met de menselijke normaalverdeling.",
+                norm: "Menselijke Normaalverdeling", total_time: "Totaal Tijd", time_per: "Tijd per Som", right_wrong: "Goed / Fout", accuracy: "Nauwkeurigheid", play_again: "Opnieuw Spelen",
+                layers: "Lagen te gaan:", inf_score: "Infinite Score:", add: "Som (+)", sub: "Min (-)", mul: "Keer (*)", div: "Delen (/)", pow: "Macht (^)", root: "Wortel (√)",
+                solved: "Opgelost!", time: "Tijd:", achieved: "Behaalde Infinite Score", check: "Controleer Antwoord",
+                lbl_add: "OPTELLEN", lbl_sub: "AFTREKKEN", lbl_mul: "VERMENIGVULDIGEN", lbl_sq: "KWADRATEN",
+                how_to_play: "Hoe werkt dit?", g1_help: "Los zo snel mogelijk de rekensommen op. Type je antwoord in en druk op Enter.", g2_help: "Pel de formule af door telkens de buitenste operatie te kiezen (bijv. + voor som, * voor vermenigvuldiging)."
+            },
+            en: {
+                subtitle: "VWO & HAVO Practice Platform", home: "🏠 Home", a11y: "Accessibility", theme: "Theme",
+                light: "Light", dark: "Dark", font: "Font",
+                nav_home: "🏠 Home", nav_speed: "Speed Math", nav_peeler: "Math Peeler",
+                nav_formulas: "Formulas & Tables", nav_fractions: "Fractions & %", nav_stats: "Statistics", nav_theory: "📚 Theory", nav_progress: "🏆 Progress",
+                stat_streak: "Streak:", stat_speed: "Speed:",
+                welcome_title: "Welcome to Math Hub", hub_tag: "Practice & Improve", hub_desc: "Train your arithmetic, algebra, formulas, fractions, and statistics in 5 minutes!",
+                g1_title: "Speed Math", g1_sub: "Speed & Accuracy", g1_desc: "Solve equations against the clock and compare your speed with the human normal distribution.", g1_btn: "Play Speed Math",
+                g2_sub: "Algebraic Insight", g2_desc: "Peel complex formulas layer by layer from the outside in. Includes ♾️ Infinite Mode!", g2_btn: "Play Math Peeler",
+                kb_title: "Cube Fusion", kb_sub: "Strategic Math", kb_desc: "Buy cubes, drop them and merge them together. Addition, multiplication and smart planning yield the most coins!", kb_btn: "Play Cube Fusion",
+                kb_coins: "Coins", kb_restart: "🔄 Restart", kb_home: "← Back", kb_shop: "🛒 Shop", kb_board: "Board", kb_shop_aria: "Shop", kb_board_aria: "Game board with 4 columns",
+                kb_how: "How to play?",
+                kb_r1: "Start with 100 coins. Click a cube in the shop to buy it. It drops down a column until it lands.",
+                kb_r2: "Hover or tap a cube to see Price, Level, and Type. Price = level - type (min 0).",
+                kb_r3: "Adjacent cubes of the same type auto-merge: levels add up, and you gain coins.",
+                kb_r4: "Drag a cube onto a neighbor to mix them: types and levels multiply.",
+                kb_r5: "Hidden fusion counter: merge +1, mix +2. At 3, the cube explodes and gives coins!",
+                kb_r6: "Keyboard: arrow keys to select, Shift + arrow to mix in that direction.",
+                kb_idle: "Hover or tap a cube to view stats.", kb_price: "Price", kb_level: "Level", kb_type: "Type",
+                kb_cube_label: "Cube. Price {p}, level {l}, type {ty}.",
+                kb_ready: "Ready to play. You have {c} coins.", kb_bought: "Bought for {p} coins.", kb_free: "Bought for free.",
+                kb_toocostly: "Too expensive: price {p}, you have {c} coins.", kb_full: "Board is full. Merge or mix cubes first.",
+                kb_merge: "Merged: +{n} coins.", kb_mix: "Mixed! Now type {ty}, level {l}. Next fusion causes an explosion.",
+                kb_boom: "Boom! Cube exploded: +{n} coins.", kb_need: "Drag to an adjacent cube to mix.",
+                g4_title: "Formulas & Tables", g4_sub: "Graphs & Functions", g4_desc: "Explore linear, quadratic, and exponential formulas. Fill in tables and inspect graphs!", g4_btn: "Open Formulas & Tables",
+                g5_title: "Fractions & Percentages", g5_sub: "Visual & Ratios", g5_desc: "Convert fractions, decimals and percentages with interactive visual charts.", g5_btn: "Open Fractions & %",
+                g6_title: "Statistics & Charts", g6_sub: "Data & Central Measures", g6_desc: "Calculate mean, median, mode and range with automatic histograms.", g6_btn: "Open Statistics",
+                setup_title: "Choose Level", setup_desc: "Select difficulty level to start.", setup_hs: "High Score Infinite Mode",
+                lvl1: "Level 1", lvl1_sub: "Easy", lvl2: "Level 2", lvl2_sub: "Medium", lvl3: "Level 3", lvl3_sub: "Hard", back: "Back to overview",
+                g1_input: "0", confirm: "Confirm (Enter)", analysis: "Analysis & Results", analysis_sub: "Your performance compared to human normal distribution.",
+                norm: "Human Normal Distribution", total_time: "Total Time", time_per: "Time per Problem", right_wrong: "Correct / Wrong", accuracy: "Accuracy", play_again: "Play Again",
+                layers: "Layers left:", inf_score: "Infinite Score:", add: "Sum (+)", sub: "Min (-)", mul: "Times (*)", div: "Divide (/)", pow: "Power (^)", root: "Root (√)",
+                solved: "Solved!", time: "Time:", achieved: "Achieved Infinite Score", check: "Check Answer",
+                lbl_add: "ADDITION", lbl_sub: "SUBTRACTION", lbl_mul: "MULTIPLICATION", lbl_sq: "SQUARES",
+                how_to_play: "How to play?", g1_help: "Solve math problems as fast as possible. Type your answer and press Enter.", g2_help: "Peel the formula by choosing the outermost operation (e.g., + for sum, * for multiplication)."
+            }
+        };
+
+        let currentLang = 'nl';
+        let activeGameType = null;
+
+        function setLanguage(lang) {
+            currentLang = lang;
+            document.getElementById('lang-btn-nl').className = lang === 'nl' ? "px-2 py-0.5 rounded-lg bg-white dark:bg-slate-700 shadow-sm transition" : "px-2 py-0.5 rounded-lg transition opacity-70 hover:opacity-100";
+            document.getElementById('lang-btn-en').className = lang === 'en' ? "px-2 py-0.5 rounded-lg bg-white dark:bg-slate-700 shadow-sm transition" : "px-2 py-0.5 rounded-lg transition opacity-70 hover:opacity-100";
+
+            document.querySelectorAll('[data-i18n]').forEach(el => {
+                const key = el.getAttribute('data-i18n');
+                if (translations[lang] && translations[lang][key]) {
+                    el.textContent = translations[lang][key];
+                }
+            });
+        }
+
+        // --- ACCESSIBILITY & THEME LOGIC ---
+        function toggleA11yMenu(e) {
+            e.stopPropagation();
+            const dropdown = document.getElementById('a11y-dropdown');
+            dropdown.classList.toggle('hidden');
+        }
+
+        document.addEventListener('click', () => {
+            const dropdown = document.getElementById('a11y-dropdown');
+            if (!dropdown.classList.contains('hidden')) {
+                dropdown.classList.add('hidden');
+            }
+        });
+
+        function setTheme(theme) {
+            const html = document.documentElement;
+            html.classList.remove('dark', 'oled-dark');
+            if (theme === 'dark') {
+                html.classList.add('dark');
+            } else if (theme === 'oled') {
+                html.classList.add('dark', 'oled-dark');
+            }
+        }
+
+        function setFont(font) {
+            document.body.classList.remove('font-inter', 'font-lexend', 'font-dyslexic');
+            document.body.classList.add(`font-${font}`);
+        }
+
+        // --- NAVIGATION LOGIC ---
+        const views = ['hub-view', 'setup-view', 'game1-view', 'game2-view', 'kubus-view', 'formules-view', 'breuken-view', 'statistiek-view', 'theorie-view', 'voortgang-view'];
+
+        function showView(viewId) {
+            views.forEach(v => {
+                const el = document.getElementById(v);
+                if (el) el.classList.add('hidden');
+            });
+            const target = document.getElementById(viewId);
+            if (target) target.classList.remove('hidden');
+
+            if (viewId === 'formules-view') initFormulaView();
+            if (viewId === 'breuken-view') updateFractionVis();
+            if (viewId === 'statistiek-view') generateNewDataset();
+            if (viewId === 'theorie-view' && window.MathJax) MathJax.typesetPromise();
+        }
+
+        function resetToHub() {
+            showView('hub-view');
+        }
+
+        function setupGame(type) {
+            activeGameType = type;
+            showView('setup-view');
+
+            const title = document.getElementById('setup-title');
+            const icon = document.getElementById('setup-icon');
+            const helpBox = document.getElementById('setup-help-box');
+            const hsContainer = document.getElementById('peeler-highscore-container');
+            const btnInf = document.getElementById('btn-infinite-mode');
+
+            helpBox.classList.add('hidden');
+
+            if (type === 'rekensnelheid') {
+                icon.textContent = '⚡';
+                title.textContent = translations[currentLang].g1_title;
+                helpBox.textContent = translations[currentLang].g1_help;
+                hsContainer.classList.add('hidden');
+                btnInf.classList.add('hidden');
+            } else if (type === 'peeler') {
+                icon.textContent = '🧅';
+                title.textContent = 'Math Peeler';
+                helpBox.textContent = translations[currentLang].g2_help;
+                hsContainer.classList.remove('hidden');
+                btnInf.classList.remove('hidden');
+
+                const hs = localStorage.getItem('peeler_hs') || 0;
+                document.getElementById('peeler-highscore-val').textContent = hs;
+            }
+        }
+
+        function toggleHelp() {
+            document.getElementById('setup-help-box').classList.toggle('hidden');
+        }
+
+        function startGame(mode) {
+            if (activeGameType === 'rekensnelheid') {
+                startG1(mode);
+            } else if (activeGameType === 'peeler') {
+                startG2(mode);
+            }
+        }
+
+        // ==========================================
+        // GAME 1: REKENSNELHEID LOGIC
+        // ==========================================
+        let g1CurrentProblem = 0;
+        let g1TotalProblems = 10;
+        let g1Level = 1;
+        let g1Score = 0;
+        let g1StartTime = 0;
+        let g1TimerInterval = null;
+        let g1Answer = 0;
+
+        function startG1(level) {
+            g1Level = level;
+            g1CurrentProblem = 0;
+            g1Score = 0;
+            showView('game1-view');
+            document.getElementById('g1-results').classList.add('hidden');
+            document.getElementById('g1-card').classList.remove('hidden');
+            
+            g1StartTime = Date.now();
+            if (g1TimerInterval) clearInterval(g1TimerInterval);
+            g1TimerInterval = setInterval(() => {
+                const elapsed = ((Date.now() - g1StartTime) / 1000).toFixed(1);
+                document.getElementById('g1-timer-text').textContent = `${elapsed}s`;
+            }, 100);
+
+            nextG1Problem();
+        }
+
+        function nextG1Problem() {
+            if (g1CurrentProblem >= g1TotalProblems) {
+                finishG1();
+                return;
+            }
+
+            g1CurrentProblem++;
+            document.getElementById('g1-progress-text').textContent = `Som ${g1CurrentProblem} van ${g1TotalProblems}`;
+            document.getElementById('g1-progress-bar').style.width = `${(g1CurrentProblem / g1TotalProblems) * 100}%`;
+
+            let a, b, op, label;
+            if (g1Level === 1) {
+                a = Math.floor(Math.random() * 20) + 1;
+                b = Math.floor(Math.random() * 20) + 1;
+                g1Answer = a + b;
+                label = translations[currentLang].lbl_add;
+                document.getElementById('g1-problem').textContent = `${a} + ${b}`;
+            } else if (g1Level === 2) {
+                a = Math.floor(Math.random() * 12) + 2;
+                b = Math.floor(Math.random() * 12) + 2;
+                g1Answer = a * b;
+                label = translations[currentLang].lbl_mul;
+                document.getElementById('g1-problem').textContent = `${a} × ${b}`;
+            } else {
+                a = Math.floor(Math.random() * 15) + 3;
+                g1Answer = a * a;
+                label = translations[currentLang].lbl_sq;
+                document.getElementById('g1-problem').textContent = `${a}²`;
+            }
+
+            document.getElementById('g1-label').textContent = label;
+            const input = document.getElementById('g1-input');
+            input.value = '';
+            input.focus();
+        }
+
+        function submitG1Answer(e) {
+            e.preventDefault();
+            const input = document.getElementById('g1-input');
+            const userVal = parseFloat(input.value);
+
+            if (userVal === g1Answer) {
+                g1Score++;
+                document.getElementById('g1-card').classList.add('correct-flash');
+                setTimeout(() => document.getElementById('g1-card').classList.remove('correct-flash'), 400);
+            } else {
+                document.getElementById('g1-card').classList.add('wrong-flash');
+                setTimeout(() => document.getElementById('g1-card').classList.remove('wrong-flash'), 400);
+            }
+
+            nextG1Problem();
+        }
+
+        function finishG1() {
+            clearInterval(g1TimerInterval);
+            const totalTime = ((Date.now() - g1StartTime) / 1000).toFixed(1);
+            const avgTime = (totalTime / g1TotalProblems).toFixed(2);
+            const accuracy = Math.round((g1Score / g1TotalProblems) * 100);
+
+            document.getElementById('g1-card').classList.add('hidden');
+            document.getElementById('g1-results').classList.remove('hidden');
+
+            document.getElementById('g1-stat-total').textContent = `${totalTime}s`;
+            document.getElementById('g1-stat-avg').textContent = `${avgTime}s`;
+            document.getElementById('g1-stat-score').textContent = `${g1Score} / ${g1TotalProblems}`;
+            document.getElementById('g1-stat-accuracy').textContent = `${accuracy}%`;
+
+            drawBellCurve(avgTime);
+        }
+
+        function drawBellCurve(avgTime) {
+            const canvas = document.getElementById('bellCurveCanvas');
+            const ctx = canvas.getContext('2d');
+            canvas.width = canvas.parentElement.clientWidth;
+            canvas.height = canvas.parentElement.clientHeight;
+
+            const w = canvas.width;
+            const h = canvas.height;
+
+            ctx.clearRect(0, 0, w, h);
+
+            ctx.beginPath();
+            ctx.moveTo(0, h - 10);
+            for (let x = 0; x <= w; x++) {
+                const normX = (x - w / 2) / (w / 6);
+                const y = h - 10 - (Math.exp(-0.5 * normX * normX) * (h - 30));
+                ctx.lineTo(x, y);
+            }
+            ctx.strokeStyle = '#f59e0b';
+            ctx.lineWidth = 3;
+            ctx.stroke();
+
+            // Calculate percentile marker (user speed vs normal mean of 2.5s)
+            let userX = w / 2 + (avgTime - 2.5) * (w / 10);
+            userX = Math.max(20, Math.min(w - 20, userX));
+
+            ctx.beginPath();
+            ctx.arc(userX, h - 25, 6, 0, Math.PI * 2);
+            ctx.fillStyle = '#6366f1';
+            ctx.fill();
+            ctx.lineWidth = 2;
+            ctx.strokeStyle = '#ffffff';
+            ctx.stroke();
+        }
+
+        // ==========================================
+        // GAME 2: MATH PEELER LOGIC
+        // ==========================================
+        let g2Mode = 1;
+        let g2Score = 0;
+        let g2TargetLayers = 5;
+        let g2CurrentTree = null;
+        let g2StartTime = 0;
+        let g2TimerInterval = null;
+
+        function startG2(mode) {
+            g2Mode = mode;
+            g2Score = 0;
+            showView('game2-view');
+            document.getElementById('g2-results').classList.add('hidden');
+
+            if (mode === 'infinite') {
+                g2TargetLayers = Infinity;
+                document.getElementById('g2-score-label').textContent = translations[currentLang].inf_score;
+            } else {
+                g2TargetLayers = mode === 1 ? 4 : mode === 2 ? 6 : 8;
+                document.getElementById('g2-score-label').textContent = translations[currentLang].layers;
+            }
+
+            g2StartTime = Date.now();
+            if (g2TimerInterval) clearInterval(g2TimerInterval);
+            g2TimerInterval = setInterval(() => {
+                const elapsed = ((Date.now() - g2StartTime) / 1000).toFixed(1);
+                document.getElementById('g2-timer').textContent = `${elapsed}s`;
+            }, 100);
+
+            nextG2Tree();
+        }
+
+        function generateTree(depth) {
+            const ops = ['s', 'm', 'k', 'd', 'p', 'r'];
+            if (depth <= 1) {
+                const op = ops[Math.floor(Math.random() * 2)];
+                return { op: op, expr: op === 's' ? '(x + 3)' : '(x - 2)' };
+            }
+            const op = ops[Math.floor(Math.random() * ops.length)];
+            const child = generateTree(depth - 1);
+            
+            let expr = "";
+            if (op === 's') expr = `${child.expr} + ${Math.floor(Math.random()*5)+1}`;
+            else if (op === 'm') expr = `${child.expr} - ${Math.floor(Math.random()*5)+1}`;
+            else if (op === 'k') expr = `${Math.floor(Math.random()*3)+2} · ${child.expr}`;
+            else if (op === 'd') expr = `\\frac{${child.expr}}{${Math.floor(Math.random()*3)+2}}`;
+            else if (op === 'p') expr = `(${child.expr})^2`;
+            else if (op === 'r') expr = `\\sqrt{${child.expr}}`;
+
+            return { op: op, child: child, expr: expr };
+        }
+
+        function nextG2Tree() {
+            const depth = g2Mode === 'infinite' ? Math.min(8, 3 + Math.floor(g2Score / 2)) : g2TargetLayers;
+            g2CurrentTree = generateTree(depth);
+            renderG2Tree();
+        }
+
+        function renderG2Tree() {
+            const eqEl = document.getElementById('g2-equation');
+            eqEl.innerHTML = `\\[ y = ${g2CurrentTree.expr} \\]`;
+            if (window.MathJax) MathJax.typesetPromise([eqEl]);
+
+            if (g2Mode === 'infinite') {
+                document.getElementById('g2-score').textContent = g2Score;
+            } else {
+                document.getElementById('g2-score').textContent = countLayers(g2CurrentTree);
+            }
+        }
+
+        function countLayers(node) {
+            return node.child ? 1 + countLayers(node.child) : 1;
+        }
+
+        function handleG2Input(op) {
+            if (!g2CurrentTree) return;
+
+            if (g2CurrentTree.op === op) {
+                flashG2Feedback("Goed!", "text-emerald-500");
+                if (g2CurrentTree.child) {
+                    g2CurrentTree = g2CurrentTree.child;
+                    g2Score++;
+                    renderG2Tree();
+                } else {
+                    g2Score++;
+                    if (g2Mode === 'infinite') {
+                        nextG2Tree();
+                    } else {
+                        finishG2();
+                    }
+                }
+            } else {
+                flashG2Feedback("Fout, probeer opnieuw!", "text-rose-500");
+            }
+        }
+
+        function flashG2Feedback(msg, cls) {
+            const fb = document.getElementById('g2-feedback');
+            fb.textContent = msg;
+            fb.className = `absolute top-4 font-bold text-xs sm:text-sm ${cls}`;
+            setTimeout(() => fb.textContent = '', 800);
+        }
+
+        function finishG2() {
+            clearInterval(g2TimerInterval);
+            const totalTime = ((Date.now() - g2StartTime) / 1000).toFixed(1);
+
+            if (g2Mode === 'infinite') {
+                const prevHs = parseInt(localStorage.getItem('peeler_hs') || '0', 10);
+                if (g2Score > prevHs) {
+                    localStorage.setItem('peeler_hs', g2Score);
+                }
+                document.getElementById('g2-res-score-box').classList.remove('hidden');
+                document.getElementById('g2-res-score-val').textContent = g2Score;
+            } else {
+                document.getElementById('g2-res-score-box').classList.add('hidden');
+            }
+
+            document.getElementById('g2-res-tijd').textContent = `${totalTime}s`;
+            document.getElementById('g2-results').classList.remove('hidden');
+        }
+
+        // ==========================================
+        // GAME 3: KUBUS FUSIE LOGIC
+        // ==========================================
+        let kbCoins = 100;
+        let kbBoard = Array(16).fill(null);
+        let kbShop = [];
+
+        function startKubus() {
+            showView('kubus-view');
+            kbInit();
+        }
+
+        function kbInit() {
+            kbCoins = 100;
+            kbBoard = Array(16).fill(null);
+            updateKbCoins();
+
+            // Shop cubes
+            kbShop = [
+                { type: 1, level: 2 },
+                { type: 1, level: 4 },
+                { type: 2, level: 4 },
+                { type: 2, level: 6 },
+                { type: 3, level: 6 },
+                { type: 3, level: 8 },
+                { type: 4, level: 8 },
+                { type: 4, level: 10 },
+            ];
+
+            renderKbShop();
+            renderKbBoard();
+            document.getElementById('kb-inspect').textContent = translations[currentLang].kb_idle;
+            document.getElementById('kb-status').textContent = translations[currentLang].kb_ready.replace('{c}', kbCoins);
+        }
+
+        function updateKbCoins() {
+            document.getElementById('kb-coins').textContent = kbCoins;
+        }
+
+        function renderKbShop() {
+            const shopEl = document.getElementById('kb-shop');
+            shopEl.innerHTML = '';
+
+            kbShop.forEach((item, idx) => {
+                const price = Math.max(0, item.level - item.type);
+                const slot = document.createElement('div');
+                slot.className = 'kb-slot';
+
+                const cube = createCubeEl(item.type, item.level, price);
+                cube.onclick = () => buyKbCube(idx);
+                cube.onmouseenter = () => inspectKbCube(item.type, item.level, price);
+
+                slot.appendChild(cube);
+                shopEl.appendChild(slot);
+            });
+        }
+
+        function createCubeEl(type, level, price) {
+            const btn = document.createElement('button');
+            btn.className = 'kb-cube';
+            const scale = Math.min(1.3, 0.6 + level * 0.08);
+            btn.style.setProperty('--s', scale);
+
+            const colors = ['#3b82f6', '#10b981', '#f59e0b', '#ec4899', '#8b5cf6', '#ef4444'];
+            btn.style.backgroundColor = colors[(type - 1) % colors.length];
+
+            btn.innerHTML = `
+                <div class="kb-eyes"><span class="kb-eye"><i class="kb-pupil"></i></span><span class="kb-eye"><i class="kb-pupil"></i></span></div>
+                <div class="kb-tip">Level ${level}\nType ${type}\nPrijs ${price}</div>
+            `;
+            return btn;
+        }
+
+        function inspectKbCube(type, level, price) {
+            document.getElementById('kb-inspect').textContent = `${translations[currentLang].kb_level}: ${level} | ${translations[currentLang].kb_type}: ${type} | ${translations[currentLang].kb_price}: ${price}`;
+        }
+
+        function buyKbCube(shopIdx) {
+            const item = kbShop[shopIdx];
+            const price = Math.max(0, item.level - item.type);
+
+            if (kbCoins < price) {
+                document.getElementById('kb-status').textContent = translations[currentLang].kb_toocostly.replace('{p}', price).replace('{c}', kbCoins);
+                return;
+            }
+
+            // Find free slot in board (bottom-up in columns)
+            let emptyIdx = -1;
+            for (let i = 15; i >= 0; i--) {
+                if (!kbBoard[i]) {
+                    emptyIdx = i;
+                    break;
+                }
+            }
+
+            if (emptyIdx === -1) {
+                document.getElementById('kb-status').textContent = translations[currentLang].kb_full;
+                return;
+            }
+
+            kbCoins -= price;
+            updateKbCoins();
+
+            kbBoard[emptyIdx] = { type: item.type, level: item.level, merges: 0 };
+            document.getElementById('kb-status').textContent = price > 0 ? translations[currentLang].kb_bought.replace('{p}', price) : translations[currentLang].kb_free;
+
+            checkAutoMerges();
+            renderKbBoard();
+        }
+
+        function renderKbBoard() {
+            const boardEl = document.getElementById('kb-board');
+            boardEl.innerHTML = '';
+
+            for (let i = 0; i < 16; i++) {
+                const slot = document.createElement('div');
+                slot.className = 'kb-slot';
+
+                const item = kbBoard[i];
+                if (item) {
+                    const price = Math.max(0, item.level - item.type);
+                    const cube = createCubeEl(item.type, item.level, price);
+                    cube.draggable = true;
+                    cube.ondragstart = (e) => e.dataTransfer.setData('text/plain', i);
+                    cube.ondragover = (e) => e.preventDefault();
+                    cube.ondrop = (e) => handleKbDrop(e, i);
+                    cube.onmouseenter = () => inspectKbCube(item.type, item.level, price);
+
+                    slot.appendChild(cube);
+                }
+
+                boardEl.appendChild(slot);
+            }
+        }
+
+        function handleKbDrop(e, targetIdx) {
+            e.preventDefault();
+            const sourceIdx = parseInt(e.dataTransfer.getData('text/plain'), 10);
+            if (sourceIdx === targetIdx || isNaN(sourceIdx)) return;
+
+            const src = kbBoard[sourceIdx];
+            const tgt = kbBoard[targetIdx];
+
+            if (src && tgt) {
+                // Mix cubes
+                tgt.type = src.type * tgt.type;
+                tgt.level = src.level * tgt.level;
+                tgt.merges += 2;
+                kbBoard[sourceIdx] = null;
+
+                if (tgt.merges >= 3) {
+                    // Explosion!
+                    const reward = tgt.level;
+                    kbCoins += reward;
+                    kbBoard[targetIdx] = null;
+                    document.getElementById('kb-status').textContent = translations[currentLang].kb_boom.replace('{n}', reward);
+                } else {
+                    document.getElementById('kb-status').textContent = translations[currentLang].kb_mix.replace('{ty}', tgt.type).replace('{l}', tgt.level);
+                }
+
+                updateKbCoins();
+                checkAutoMerges();
+                renderKbBoard();
+            }
+        }
+
+        function checkAutoMerges() {
+            let merged = false;
+            for (let i = 0; i < 16; i++) {
+                if (!kbBoard[i]) continue;
+                // Check right neighbor
+                if (i % 4 < 3 && kbBoard[i + 1] && kbBoard[i].type === kbBoard[i + 1].type) {
+                    mergeCubes(i, i + 1);
+                    merged = true;
+                    break;
+                }
+                // Check bottom neighbor
+                if (i < 12 && kbBoard[i + 4] && kbBoard[i].type === kbBoard[i + 4].type) {
+                    mergeCubes(i, i + 4);
+                    merged = true;
+                    break;
+                }
+            }
+            if (merged) checkAutoMerges();
+        }
+
+        function mergeCubes(idx1, idx2) {
+            const c1 = kbBoard[idx1];
+            const c2 = kbBoard[idx2];
+
+            c2.level += c1.level;
+            c2.merges += 1;
+            kbBoard[idx1] = null;
+
+            const reward = Math.max(0, c2.level - c2.type);
+            kbCoins += reward;
+            updateKbCoins();
+
+            if (c2.merges >= 3) {
+                kbCoins += c2.level;
+                kbBoard[idx2] = null;
+                document.getElementById('kb-status').textContent = translations[currentLang].kb_boom.replace('{n}', c2.level);
+            } else {
+                document.getElementById('kb-status').textContent = translations[currentLang].kb_merge.replace('{n}', reward);
+            }
+        }
+
+        // ==========================================
+        // VIEW 4: FORMULES & TABELLEN LOGIC
+        // ==========================================
+        let fCurrentType = 'linear';
+        let fParamA = 2;
+        let fParamB = -3;
+
+        function initFormulaView() {
+            setFormulaType('linear');
+        }
+
+        function setFormulaType(type) {
+            fCurrentType = type;
+            document.querySelectorAll('[id^="f-btn-"]').forEach(btn => {
+                btn.className = "p-3 rounded-2xl border-2 border-slate-200 dark:border-slate-700 text-slate-600 dark:text-slate-300 hover:border-blue-300";
+            });
+            document.getElementById(`f-btn-${type}`).className = "p-3 rounded-2xl border-2 border-blue-500 bg-blue-50 dark:bg-blue-950/40 text-blue-600 dark:text-blue-300";
+
+            updateFormulaParams();
+            newFormulaTask();
+        }
+
+        function updateFormulaParams() {
+            fParamA = parseInt(document.getElementById('slider-a').value, 10);
+            fParamB = parseInt(document.getElementById('slider-b').value, 10);
+
+            document.getElementById('param-a-val').textContent = fParamA;
+            document.getElementById('param-b-val').textContent = fParamB;
+
+            let latex = "";
+            if (fCurrentType === 'linear') latex = `y = ${fParamA}x ${fParamB >= 0 ? '+' : ''} ${fParamB}`;
+            else if (fCurrentType === 'quadratic') latex = `y = ${fParamA}x^2 ${fParamB >= 0 ? '+' : ''} ${fParamB}`;
+            else if (fCurrentType === 'exponential') latex = `y = ${fParamA} \\cdot 2^x ${fParamB >= 0 ? '+' : ''} ${fParamB}`;
+            else if (fCurrentType === 'inverse') latex = `y = \\frac{${fParamA}}{x} ${fParamB >= 0 ? '+' : ''} ${fParamB}`;
+
+            const display = document.getElementById('f-latex-display');
+            display.innerHTML = `\\[ ${latex} \\]`;
+            if (window.MathJax) MathJax.typesetPromise([display]);
+
+            drawFormulaCanvas();
+        }
+
+        function drawFormulaCanvas() {
+            const canvas = document.getElementById('formulaCanvas');
+            const ctx = canvas.getContext('2d');
+            canvas.width = canvas.parentElement.clientWidth;
+            canvas.height = canvas.parentElement.clientHeight;
+
+            const w = canvas.width;
+            const h = canvas.height;
+
+            ctx.clearRect(0, 0, w, h);
+
+            // Grid lines
+            ctx.strokeStyle = '#e2e8f0';
+            ctx.lineWidth = 1;
+            ctx.beginPath();
+            ctx.moveTo(w / 2, 0); ctx.lineTo(w / 2, h);
+            ctx.moveTo(0, h / 2); ctx.lineTo(w, h / 2);
+            ctx.stroke();
+
+            // Function plot
+            ctx.beginPath();
+            ctx.strokeStyle = '#3b82f6';
+            ctx.lineWidth = 2.5;
+
+            let first = true;
+            for (let px = 0; px <= w; px += 2) {
+                const x = (px - w / 2) / 20;
+                let y = 0;
+                if (fCurrentType === 'linear') y = fParamA * x + fParamB;
+                else if (fCurrentType === 'quadratic') y = fParamA * x * x + fParamB;
+                else if (fCurrentType === 'exponential') y = fParamA * Math.pow(2, x) + fParamB;
+                else if (fCurrentType === 'inverse') y = x !== 0 ? (fParamA / x) + fParamB : NaN;
+
+                if (isNaN(y) || Math.abs(y) > 20) {
+                    first = true;
+                    continue;
+                }
+
+                const py = h / 2 - y * 20;
+                if (first) {
+                    ctx.moveTo(px, py);
+                    first = false;
+                } else {
+                    ctx.lineTo(px, py);
+                }
+            }
+            ctx.stroke();
+        }
+
+        function newFormulaTask() {
+            const tbody = document.getElementById('f-table-body');
+            tbody.innerHTML = '';
+
+            const row = document.createElement('tr');
+            row.className = "border border-blue-200 dark:border-blue-800";
+
+            const labelTd = document.createElement('td');
+            labelTd.className = "p-3 font-bold bg-blue-50 dark:bg-blue-950/40";
+            labelTd.textContent = 'y';
+            row.appendChild(labelTd);
+
+            [-2, -1, 0, 1, 2].forEach(x => {
+                const td = document.createElement('td');
+                td.className = "p-2 border border-blue-200 dark:border-blue-800";
+
+                let trueY = 0;
+                if (fCurrentType === 'linear') trueY = fParamA * x + fParamB;
+                else if (fCurrentType === 'quadratic') trueY = fParamA * x * x + fParamB;
+                else if (fCurrentType === 'exponential') trueY = fParamA * Math.pow(2, x) + fParamB;
+                else if (fCurrentType === 'inverse') trueY = x !== 0 ? fParamA / x + fParamB : null;
+
+                const input = document.createElement('input');
+                input.type = 'number';
+                input.dataset.trueVal = trueY;
+                input.className = "w-16 p-1.5 text-center font-bold bg-slate-50 dark:bg-slate-900 border rounded-xl";
+
+                td.appendChild(input);
+                row.appendChild(td);
+            });
+
+            tbody.appendChild(row);
+            document.getElementById('f-feedback').classList.add('hidden');
+        }
+
+        function checkFormulaTable() {
+            const inputs = document.querySelectorAll('#f-table-body input');
+            let correct = true;
+
+            inputs.forEach(inp => {
+                const target = parseFloat(inp.dataset.trueVal);
+                const val = parseFloat(inp.value);
+
+                if (isNaN(target)) return; // Skip asymptote/undefined
+
+                if (Math.abs(val - target) < 0.1) {
+                    inp.className = "w-16 p-1.5 text-center font-bold bg-emerald-100 border-2 border-emerald-500 rounded-xl text-emerald-800";
+                } else {
+                    inp.className = "w-16 p-1.5 text-center font-bold bg-rose-100 border-2 border-rose-500 rounded-xl text-rose-800";
+                    correct = false;
+                }
+            });
+
+            const fb = document.getElementById('f-feedback');
+            fb.classList.remove('hidden');
+            if (correct) {
+                fb.textContent = "Uitstekend! Alle tabelwaarden zijn correct berekend.";
+                fb.className = "text-xs font-bold p-3 rounded-xl bg-emerald-100 text-emerald-800 dark:bg-emerald-950/80 dark:text-emerald-300";
+            } else {
+                fb.textContent = "Er staan nog foutieve waarden in de tabel. Probeer opnieuw!";
+                fb.className = "text-xs font-bold p-3 rounded-xl bg-rose-100 text-rose-800 dark:bg-rose-950/80 dark:text-rose-300";
+            }
+        }
+
+        // ==========================================
+        // VIEW 5: BREUKEN & PERCENTAGES LOGIC
+        // ==========================================
+        function updateFractionVis() {
+            const teller = parseInt(document.getElementById('br-teller').value, 10) || 1;
+            const noemer = parseInt(document.getElementById('br-noemer').value, 10) || 1;
+
+            const dec = (teller / noemer).toFixed(3);
+            const perc = ((teller / noemer) * 100).toFixed(1) + '%';
+
+            function gcd(a, b) { return b ? gcd(b, a % b) : a; }
+            const common = gcd(teller, noemer);
+            const simp = `${teller / common} / ${noemer / common}`;
+
+            document.getElementById('br-val-dec').textContent = dec;
+            document.getElementById('br-val-perc').textContent = perc;
+            document.getElementById('br-val-simp').textContent = simp;
+
+            // Draw Fraction Pie Canvas
+            const canvas = document.getElementById('fractionCanvas');
+            const ctx = canvas.getContext('2d');
+            canvas.width = canvas.parentElement.clientWidth;
+            canvas.height = canvas.parentElement.clientHeight;
+
+            const cx = canvas.width / 2;
+            const cy = canvas.height / 2;
+            const radius = Math.min(cx, cy) - 10;
+
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+            const slice = (Math.PI * 2) / noemer;
+
+            for (let i = 0; i < noemer; i++) {
+                ctx.beginPath();
+                ctx.moveTo(cx, cy);
+                ctx.arc(cx, cy, radius, i * slice, (i + 1) * slice);
+                ctx.closePath();
+
+                if (i < teller) {
+                    ctx.fillStyle = '#ec4899';
+                } else {
+                    ctx.fillStyle = '#f1f5f9';
+                }
+                ctx.fill();
+                ctx.strokeStyle = '#cbd5e1';
+                ctx.stroke();
+            }
+        }
+
+        let brQuizAnswer = 60;
+        function checkFractionQuiz(e) {
+            e.preventDefault();
+            const input = parseFloat(document.getElementById('br-quiz-input').value);
+            const fb = document.getElementById('br-quiz-feedback');
+            fb.classList.remove('hidden');
+
+            if (Math.abs(input - brQuizAnswer) < 0.1) {
+                fb.textContent = "Correct! 3/5 = 60%.";
+                fb.className = "text-xs font-bold p-3 rounded-xl bg-emerald-100 text-emerald-800 dark:bg-emerald-950/80 dark:text-emerald-300 text-center";
+            } else {
+                fb.textContent = "Helaas, niet juist. Tip: 1/5 = 20%, dus 3/5 = 60%.";
+                fb.className = "text-xs font-bold p-3 rounded-xl bg-rose-100 text-rose-800 dark:bg-rose-950/80 dark:text-rose-300 text-center";
+            }
+        }
+
+        // ==========================================
+        // VIEW 6: STATISTIEK & DIAGRAMMEN LOGIC
+        // ==========================================
+        let stDataset = [4, 7, 7, 8, 12, 15, 18, 22];
+
+        function generateNewDataset() {
+            stDataset = Array.from({ length: 8 }, () => Math.floor(Math.random() * 20) + 1).sort((a, b) => a - b);
+            document.getElementById('st-dataset-display').textContent = stDataset.join(', ');
+
+            drawStatsCanvas();
+            document.getElementById('st-feedback').classList.add('hidden');
+            document.getElementById('st-input-mean').value = '';
+            document.getElementById('st-input-median').value = '';
+            document.getElementById('st-input-mode').value = '';
+            document.getElementById('st-input-range').value = '';
+        }
+
+        function drawStatsCanvas() {
+            const canvas = document.getElementById('statsCanvas');
+            const ctx = canvas.getContext('2d');
+            canvas.width = canvas.parentElement.clientWidth;
+            canvas.height = canvas.parentElement.clientHeight;
+
+            const w = canvas.width;
+            const h = canvas.height;
+
+            ctx.clearRect(0, 0, w, h);
+
+            // Frequency map
+            const counts = {};
+            stDataset.forEach(x => counts[x] = (counts[x] || 0) + 1);
+
+            const keys = Object.keys(counts).map(Number);
+            const barWidth = w / keys.length - 10;
+
+            keys.forEach((key, idx) => {
+                const count = counts[key];
+                const barHeight = (count / 4) * (h - 40);
+                const x = idx * (barWidth + 10) + 5;
+                const y = h - 25 - barHeight;
+
+                ctx.fillStyle = '#14b8a6';
+                ctx.fillRect(x, y, barWidth, barHeight);
+
+                ctx.fillStyle = '#64748b';
+                ctx.font = '10px Inter';
+                ctx.textAlign = 'center';
+                ctx.fillText(key, x + barWidth / 2, h - 8);
+                ctx.fillText(count, x + barWidth / 2, y - 5);
+            });
+        }
+
+        function checkStatsAnswers() {
+            const sum = stDataset.reduce((a, b) => a + b, 0);
+            const mean = sum / stDataset.length;
+            const median = (stDataset[3] + stDataset[4]) / 2;
+            const range = stDataset[stDataset.length - 1] - stDataset[0];
+
+            const counts = {};
+            stDataset.forEach(x => counts[x] = (counts[x] || 0) + 1);
+            let mode = keys => keys.reduce((a, b) => counts[a] > counts[b] ? a : b);
+            const modeVal = parseInt(mode(Object.keys(counts)), 10);
+
+            const userMean = parseFloat(document.getElementById('st-input-mean').value);
+            const userMedian = parseFloat(document.getElementById('st-input-median').value);
+            const userMode = parseFloat(document.getElementById('st-input-mode').value);
+            const userRange = parseFloat(document.getElementById('st-input-range').value);
+
+            let correct = true;
+            if (Math.abs(userMean - mean) > 0.1) correct = false;
+            if (Math.abs(userMedian - median) > 0.1) correct = false;
+            if (userRange !== range) correct = false;
+
+            const fb = document.getElementById('st-feedback');
+            fb.classList.remove('hidden');
+            if (correct) {
+                fb.textContent = "Perfect! Alle centrummaten en de spreiding klopen exact.";
+                fb.className = "text-xs font-bold p-3 rounded-xl bg-emerald-100 text-emerald-800 dark:bg-emerald-950/80 dark:text-emerald-300 text-center";
+            } else {
+                fb.textContent = `Nog niet helemaal! Gemiddelde = ${mean.toFixed(1)}, Mediaan = ${median}, Modus = ${modeVal}, Spreiding = ${range}.`;
+                fb.className = "text-xs font-bold p-3 rounded-xl bg-rose-100 text-rose-800 dark:bg-rose-950/80 dark:text-rose-300 text-center";
+            }
+        }
+
+        // ==========================================
+        // VIEW 7: THEORIE SEARCH LOGIC
+        // ==========================================
+        function filterTheoryCards() {
+            const query = document.getElementById('th-search-input').value.toLowerCase();
+            const cards = document.querySelectorAll('#theory-cards-grid .theory-card');
+
+            cards.forEach(card => {
+                const text = card.textContent.toLowerCase();
+                if (text.includes(query)) {
+                    card.classList.remove('hidden');
+                } else {
+                    card.classList.add('hidden');
+                }
+            });
+        }
+
+        // Initialize default state
+        window.addEventListener('load', () => {
+            setLanguage('nl');
+            showView('hub-view');
+        });
+    </script>
+</body>
+</html>
