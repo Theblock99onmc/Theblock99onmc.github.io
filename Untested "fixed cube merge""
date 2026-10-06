@@ -1,0 +1,972 @@
+<!DOCTYPE html>
+<html lang="nl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Math & Reken Hub - Kubus Fusie Fixed</title>
+
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            darkMode: 'class',
+            theme: {
+                extend: {
+                    fontFamily: {
+                        sans: ['Inter', 'sans-serif'],
+                        lexend: ['Lexend', 'sans-serif'],
+                        dyslexic: ['OpenDyslexic', 'sans-serif']
+                    },
+                    boxShadow: {
+                        'glow-purple': '0 0 25px -5px rgba(168, 85, 247, 0.4)',
+                        'glow-amber': '0 0 25px -5px rgba(245, 158, 11, 0.4)',
+                        'glow-emerald': '0 0 25px -5px rgba(16, 185, 129, 0.4)',
+                        'glow-blue': '0 0 25px -5px rgba(59, 130, 246, 0.4)',
+                    }
+                }
+            }
+        }
+    </script>
+
+    <!-- MathJax for rendering math equations -->
+    <script id="MathJax-script" async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+
+    <!-- Google Fonts & OpenDyslexic CSS -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&family=Lexend:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/open-dyslexic-styling@1.0.2/open-dyslexic/style.css" rel="stylesheet">
+    
+    <style>
+        body.font-inter { font-family: 'Inter', sans-serif !important; }
+        body.font-lexend { font-family: 'Lexend', sans-serif !important; }
+        body.font-dyslexic { font-family: 'OpenDyslexic', 'Inter', sans-serif !important; }
+
+        html.oled-dark,
+        html.oled-dark body {
+            background-color: #000000 !important;
+            color: #ffffff !important;
+        }
+
+        html.oled-dark .bg-white,
+        html.oled-dark .bg-slate-800,
+        html.oled-dark .bg-slate-900,
+        html.oled-dark .bg-gray-50,
+        html.oled-dark .bg-gray-100 {
+            background-color: #000000 !important;
+            border-color: #262626 !important;
+            color: #ffffff !important;
+        }
+
+        button:focus-visible, 
+        a:focus-visible, 
+        input:focus-visible,
+        select:focus-visible {
+            outline: 3px solid #6366f1 !important;
+            outline-offset: 3px !important;
+        }
+
+        /* ===== KUBUS FUSIE STYLES ===== */
+        .kb-stage { background: linear-gradient(165deg, #3730a3 0%, #1e1b4b 55%, #0b1020 100%); border: 3px solid #6366f1; border-radius: 1.75rem; padding: 1.25rem; color: #fff; box-shadow: 0 24px 48px -16px rgba(49, 46, 129, .6); display: flex; flex-direction: column; gap: 1rem; }
+        .kb-top { display: flex; align-items: center; justify-content: space-between; gap: .75rem; flex-wrap: wrap; }
+        .kb-coinbox { display: flex; align-items: center; gap: .6rem; background: rgba(15, 23, 42, .6); border: 2px solid rgba(251, 191, 36, .45); border-radius: 1.1rem; padding: .45rem .9rem; }
+        .kb-coin-icon { font-size: 1.9rem; line-height: 1; }
+        .kb-label { margin: 0; font-size: .7rem; font-weight: 800; letter-spacing: .08em; text-transform: uppercase; color: #c7d2fe; }
+        .kb-coin { font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace; font-weight: 900; font-size: 1.8rem; line-height: 1.05; color: #fcd34d; text-shadow: 0 2px 0 #92400e; }
+        .kb-btn { background: #6366f1; color: #fff; font-weight: 800; font-size: .8rem; padding: .55rem 1rem; border-radius: .9rem; border: 0; border-bottom: 4px solid #3730a3; cursor: pointer; transition: transform .08s, filter .15s; }
+        .kb-btn:hover { filter: brightness(1.12); }
+        .kb-btn:active { transform: translateY(2px); border-bottom-width: 2px; }
+        .kb-panel { background: rgba(15, 23, 42, .55); border: 2px solid rgba(129, 140, 248, .35); border-radius: 1.25rem; padding: 1rem; display: flex; flex-direction: column; gap: .75rem; }
+        
+        .kb-grid { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 10px; position: relative; }
+        .kb-shop-grid { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 10px; position: relative; }
+        .kb-col-hover { background: rgba(129, 140, 248, 0.15); border-radius: 0.75rem; }
+        .kb-slot { height: 78px; display: flex; align-items: center; justify-content: center; position: relative; background: rgba(255, 255, 255, .05); border: 2px dashed rgba(165, 180, 252, .22); border-radius: 1rem; }
+        
+        /* CUBE APPEARANCE */
+        .kb-cube { position: relative; display: flex; flex-direction: column; align-items: center; justify-content: center; width: 62px; height: 62px; border-radius: 1rem; border: 0; cursor: pointer; user-select: none; box-shadow: inset 0 -6px 0 rgba(0, 0, 0, .25), inset 0 4px 0 rgba(255, 255, 255, .35), 0 8px 12px rgba(0, 0, 0, .4); transition: transform .15s ease, filter .15s; }
+        .kb-cube::after { content: ""; position: absolute; top: 8%; left: 12%; width: 26%; height: 12%; border-radius: 999px; background: rgba(255, 255, 255, .5); transform: rotate(-20deg); }
+        .kb-cube:hover { transform: scale(1.06); z-index: 20; }
+        
+        .kb-cube-type-1 { background: linear-gradient(135deg, #3b82f6, #1d4ed8); color: #ffffff; }
+        .kb-cube-type-2 { background: linear-gradient(135deg, #10b981, #047857); color: #ffffff; }
+        .kb-cube-type-3 { background: linear-gradient(135deg, #f59e0b, #b45309); color: #ffffff; }
+        .kb-cube-type-4 { background: linear-gradient(135deg, #ef4444, #b91c1c); color: #ffffff; }
+        .kb-cube-type-5 { background: linear-gradient(135deg, #a855f7, #6b21a8); color: #ffffff; }
+        .kb-cube-type-6 { background: linear-gradient(135deg, #ec4899, #be185d); color: #ffffff; }
+        .kb-cube-type-7 { background: linear-gradient(135deg, #06b6d4, #0e7490); color: #ffffff; }
+        .kb-cube-type-8 { background: linear-gradient(135deg, #eab308, #854d0e); color: #ffffff; }
+        .kb-cube-type-9 { background: linear-gradient(135deg, #84cc16, #4d7c0f); color: #ffffff; }
+        .kb-cube-type-10 { background: linear-gradient(135deg, #6366f1, #3730a3); color: #ffffff; }
+        
+        .kb-cube-rainbow { 
+            background: linear-gradient(45deg, #ff0000, #ff7f00, #ffff00, #00ff00, #0000ff, #4b0082, #9400d3);
+            background-size: 300% 300%;
+            animation: rainbowBg 3s ease infinite;
+            color: #ffffff;
+            border: 2px solid #ffffff;
+        }
+        @keyframes rainbowBg { 0% {background-position: 0% 50%;} 50% {background-position: 100% 50%;} 100% {background-position: 0% 50%;} }
+
+        .kb-cube-val { font-weight: 900; font-size: 1.1rem; text-shadow: 0 2px 4px rgba(0,0,0,0.5); z-index: 2; line-height: 1; }
+        .kb-cube-lvl-tag { font-size: 0.62rem; font-weight: 800; opacity: 0.9; text-transform: uppercase; z-index: 2; }
+
+        .kb-eyes { display: flex; gap: 6px; margin-bottom: 2px; z-index: 2; }
+        .kb-eye { position: relative; width: 10px; height: 12px; background: #fff; border-radius: 50%; }
+        .kb-pupil { position: absolute; width: 5px; height: 5px; left: 2px; top: 3px; background: #0f172a; border-radius: 50%; }
+
+        @keyframes kbFall { from { transform: translateY(-120px); opacity: 0.3; } to { transform: translateY(0); opacity: 1; } }
+        .kb-fall { animation: kbFall .25s cubic-bezier(.34, 1.56, .64, 1) forwards; }
+        
+        @keyframes kbPop { 0% { transform: scale(0.6); } 50% { transform: scale(1.25); } 100% { transform: scale(1); } }
+        .kb-pop { animation: kbPop .3s ease-out forwards; }
+
+        .kb-selected-cube { outline: 4px solid #fcd34d; outline-offset: 4px; transform: scale(1.1); z-index: 30; box-shadow: 0 0 20px rgba(252, 211, 77, 0.6) !important; }
+
+        .kb-shop-item { border: 2px solid rgba(255,255,255,0.15); background: rgba(15, 23, 42, 0.6); border-radius: 1rem; padding: 0.5rem; display: flex; flex-direction: column; align-items: center; gap: 0.25rem; transition: all 0.15s ease; cursor: pointer; }
+        .kb-shop-item:hover { border-color: #818cf8; background: rgba(30, 41, 59, 0.8); transform: translateY(-2px); }
+
+        .kb-fx-float { position: absolute; font-weight: 900; font-size: 0.95rem; color: #fcd34d; text-shadow: 0 2px 4px rgba(0,0,0,0.8); pointer-events: none; animation: kbFloat 0.8s ease-out forwards; z-index: 50; }
+        @keyframes kbFloat { 0% { transform: translateY(0) scale(0.8); opacity: 1; } 100% { transform: translateY(-40px) scale(1.2); opacity: 0; } }
+    </style>
+</head>
+<body class="font-inter bg-slate-50 text-slate-900 dark:bg-slate-950 dark:text-slate-100 min-h-screen flex flex-col justify-between transition-colors duration-200">
+
+    <header class="w-full bg-white/90 dark:bg-slate-900/90 backdrop-blur-md border-b border-slate-200 dark:border-slate-800 sticky top-0 z-50 transition-colors">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 py-2.5 flex flex-wrap items-center justify-between gap-3">
+            
+            <button onclick="resetToHub()" class="flex items-center gap-3 group text-left focus:outline-none" aria-label="Terug naar Home">
+                <div class="w-10 h-10 rounded-2xl bg-gradient-to-tr from-indigo-600 to-purple-600 flex items-center justify-center text-white font-black text-xl shadow-lg group-hover:scale-105 transition-transform">
+                    ∑
+                </div>
+                <div>
+                    <h1 class="text-lg sm:text-xl font-extrabold tracking-tight bg-gradient-to-r from-indigo-600 via-purple-600 to-pink-500 bg-clip-text text-transparent">Math & Reken Hub</h1>
+                    <p class="text-[11px] text-slate-500 dark:text-slate-400 font-medium leading-none">VMBO, HAVO & VWO Oefenplatform</p>
+                </div>
+            </button>
+
+            <!-- STATS PREVIEW STRIP -->
+            <div class="hidden xl:flex items-center gap-5 bg-slate-100 dark:bg-slate-800/80 px-4 py-1.5 rounded-2xl border border-slate-200 dark:border-slate-700 text-xs font-semibold">
+                <div class="flex items-center gap-1.5">
+                    <span class="text-base">🔥</span>
+                    <span class="text-slate-500 dark:text-slate-400">Streak:</span>
+                    <span id="user-streak-val" class="font-bold text-amber-500">5 Dagen</span>
+                </div>
+                <div class="h-4 w-px bg-slate-300 dark:bg-slate-700"></div>
+                <div class="flex items-center gap-1.5">
+                    <span class="text-base">⭐</span>
+                    <span class="text-slate-500 dark:text-slate-400">XP:</span>
+                    <span id="user-xp-val" class="font-bold text-indigo-500 dark:text-indigo-400">1,450 XP</span>
+                </div>
+                <div class="h-4 w-px bg-slate-300 dark:bg-slate-700"></div>
+                <div class="flex items-center gap-1.5">
+                    <span class="text-base">🪙</span>
+                    <span class="text-slate-500 dark:text-slate-400">Munten:</span>
+                    <span id="global-coin-val" class="font-bold text-amber-400">100</span>
+                </div>
+            </div>
+
+            <!-- TOOLBAR ACTIONS & ACCESSIBILITY -->
+            <div class="flex items-center gap-1.5 sm:gap-2">
+                <button onclick="resetToHub()" class="flex items-center gap-1 px-3 py-1.5 text-xs font-semibold rounded-xl bg-slate-100 dark:bg-slate-800 hover:bg-slate-200 dark:hover:bg-slate-700 transition">
+                    🏠 Home
+                </button>
+
+                <button onclick="showView('theorie-view')" class="hidden sm:flex items-center gap-1 px-3 py-1.5 text-xs font-semibold rounded-xl bg-slate-100 dark:bg-slate-800 hover:bg-slate-200 dark:hover:bg-slate-700 transition">
+                    📚 Theorie
+                </button>
+
+                <button onclick="showView('voortgang-view')" class="hidden sm:flex items-center gap-1 px-3 py-1.5 text-xs font-semibold rounded-xl bg-slate-100 dark:bg-slate-800 hover:bg-slate-200 dark:hover:bg-slate-700 transition">
+                    🏆 Voortgang
+                </button>
+
+                <!-- Language Switcher -->
+                <div class="flex items-center bg-slate-100 dark:bg-slate-800 rounded-xl p-1 text-xs font-bold border border-slate-200 dark:border-slate-700">
+                    <button onclick="setLanguage('nl')" id="lang-btn-nl" class="px-2 py-0.5 rounded-lg bg-white dark:bg-slate-700 shadow-sm transition">NL</button>
+                    <button onclick="setLanguage('en')" id="lang-btn-en" class="px-2 py-0.5 rounded-lg transition opacity-70 hover:opacity-100">EN</button>
+                </div>
+
+                <!-- Accessibility Dropdown Trigger -->
+                <div class="relative">
+                    <button id="a11y-button" onclick="toggleA11yMenu(event)" class="flex items-center justify-center w-9 h-9 rounded-xl bg-indigo-100 dark:bg-indigo-900/40 text-indigo-600 dark:text-indigo-400 hover:bg-indigo-200 dark:hover:bg-indigo-800/60 transition focus:outline-none border border-indigo-200 dark:border-indigo-800/50" aria-label="Toegankelijkheidsopties">
+                        ♿
+                    </button>
+
+                    <div id="a11y-dropdown" class="hidden absolute right-0 top-full mt-2 w-72 bg-white dark:bg-slate-800 rounded-2xl shadow-2xl border border-slate-200 dark:border-slate-700 overflow-hidden transform origin-top-right transition-all z-50 p-4 space-y-4">
+                        <div class="space-y-1.5">
+                            <label class="text-xs font-semibold uppercase tracking-wider text-slate-500 dark:text-slate-400">Thema</label>
+                            <div class="grid grid-cols-3 gap-1 bg-slate-100 dark:bg-slate-700/60 rounded-xl p-1 text-xs font-bold border border-slate-200 dark:border-slate-600">
+                                <button onclick="setTheme('light')" class="px-2 py-1.5 rounded-lg">☀️ Licht</button>
+                                <button onclick="setTheme('dark')" class="px-2 py-1.5 rounded-lg bg-white dark:bg-slate-800 shadow-sm">🌙 Donker</button>
+                                <button onclick="setTheme('oled')" class="px-2 py-1.5 rounded-lg">🖤 OLED</button>
+                            </div>
+                        </div>
+
+                        <div class="space-y-1.5">
+                            <label class="text-xs font-semibold uppercase tracking-wider text-slate-500 dark:text-slate-400">Lettertype</label>
+                            <div class="flex flex-col gap-1 bg-slate-100 dark:bg-slate-700/60 rounded-xl p-1 text-xs font-medium border border-slate-200 dark:border-slate-600">
+                                <button onclick="setFont('inter')" class="px-3 py-1.5 rounded-lg bg-white dark:bg-slate-800 shadow-sm text-left">Standaard (Inter)</button>
+                                <button onclick="setFont('lexend')" class="px-3 py-1.5 rounded-lg text-left font-[Lexend]">Lexend</button>
+                                <button onclick="setFont('dyslexic')" class="px-3 py-1.5 rounded-lg text-left font-[OpenDyslexic]">OpenDyslexic</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- MODULE QUICK NAVIGATION STRIP -->
+        <nav class="bg-slate-100/80 dark:bg-slate-900/50 border-t border-slate-200/60 dark:border-slate-800/60 py-1.5 px-4 overflow-x-auto">
+            <div class="max-w-7xl mx-auto flex items-center justify-start sm:justify-center gap-2 text-xs font-semibold whitespace-nowrap">
+                <button onclick="startKubus()" class="px-3 py-1 rounded-lg bg-fuchsia-500/10 text-fuchsia-700 dark:text-fuchsia-400 font-bold flex items-center gap-1">
+                    <span>🧊</span> <span>Kubus Fusie</span>
+                </button>
+                <button onclick="setupGame('rekensnelheid')" class="px-3 py-1 rounded-lg hover:bg-amber-500/10 hover:text-amber-600 transition flex items-center gap-1">
+                    <span>⚡</span> <span>RekenSnelheid</span>
+                </button>
+                <button onclick="setupGame('peeler')" class="px-3 py-1 rounded-lg hover:bg-purple-500/10 hover:text-purple-600 transition flex items-center gap-1">
+                    <span>🧅</span> <span>Math Peeler</span>
+                </button>
+                <button onclick="showView('formules-view')" class="px-3 py-1 rounded-lg hover:bg-blue-500/10 hover:text-blue-600 transition flex items-center gap-1">
+                    <span>📈</span> <span>Formules & Tabellen</span>
+                </button>
+                <button onclick="showView('breuken-view')" class="px-3 py-1 rounded-lg hover:bg-pink-500/10 hover:text-pink-600 transition flex items-center gap-1">
+                    <span>🍰</span> <span>Breuken & %</span>
+                </button>
+                <button onclick="showView('statistiek-view')" class="px-3 py-1 rounded-lg hover:bg-teal-500/10 hover:text-teal-600 transition flex items-center gap-1">
+                    <span>📊</span> <span>Statistiek</span>
+                </button>
+            </div>
+        </nav>
+    </header>
+
+    <!-- MAIN CONTENT AREA -->
+    <main class="max-w-7xl mx-auto w-full px-4 sm:px-6 py-6 flex-1">
+
+        <section id="hub-view" class="space-y-8 py-2">
+            <div class="relative overflow-hidden rounded-3xl bg-gradient-to-r from-indigo-600 via-indigo-700 to-purple-800 text-white p-6 sm:p-8 shadow-xl">
+                <div class="relative z-10 max-w-2xl space-y-3">
+                    <span class="inline-block px-3 py-1 text-xs font-bold uppercase tracking-widest bg-white/20 backdrop-blur-md rounded-full text-indigo-100">
+                        Oefen & Verbeter
+                    </span>
+                    <h2 class="text-2xl sm:text-4xl font-extrabold tracking-tight">Welkom bij Math & Reken Hub</h2>
+                    <p class="text-indigo-100 text-xs sm:text-sm leading-relaxed">
+                        Train in 5 minuten je rekenvaardigheid, algebraïsch inzicht, formules, breuken en strategisch kubussen fuseren!
+                    </p>
+                </div>
+            </div>
+
+            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                <!-- Kubus Fusie Card -->
+                <div class="bg-white dark:bg-slate-800 border-2 border-fuchsia-500/40 rounded-3xl p-6 shadow-md hover:shadow-xl hover:-translate-y-1 transition-all duration-200 flex flex-col justify-between group">
+                    <div class="space-y-4">
+                        <div class="flex items-center justify-between">
+                            <div class="w-12 h-12 rounded-2xl bg-fuchsia-500/10 border border-fuchsia-500/20 text-fuchsia-500 flex items-center justify-center text-2xl shadow-sm group-hover:scale-110 transition-transform">
+                                🧊
+                            </div>
+                            <span class="px-2.5 py-1 rounded-full text-[10px] font-extrabold tracking-wider bg-fuchsia-100 text-fuchsia-800 dark:bg-fuchsia-950/80 dark:text-fuchsia-300 uppercase">
+                                GEFIXED & UPDATED
+                            </span>
+                        </div>
+                        <div>
+                            <h3 class="text-xl font-extrabold">Kubus Fusie</h3>
+                            <p class="text-xs text-fuchsia-600 dark:text-fuchsia-400 font-semibold mt-0.5">Strategisch Stapelen & Fuseren</p>
+                        </div>
+                        <p class="text-xs text-slate-600 dark:text-slate-300 leading-relaxed">
+                            Koop kubussen in de winkel, laat ze in de gekozen kolom vallen en smelt ze samen tot hogere levels voor munten & XP!
+                        </p>
+                    </div>
+
+                    <div class="mt-6 pt-4 border-t border-slate-100 dark:border-slate-700/60">
+                        <button onclick="startKubus()" class="w-full py-3 px-4 bg-fuchsia-600 hover:bg-fuchsia-700 text-white font-bold rounded-2xl shadow-lg shadow-fuchsia-600/25 transition text-xs">
+                            Speel Kubus Fusie
+                        </button>
+                    </div>
+                </div>
+
+                <!-- RekenSnelheid Card -->
+                <div class="bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700/80 rounded-3xl p-6 shadow-md hover:shadow-xl hover:-translate-y-1 transition-all duration-200 flex flex-col justify-between group">
+                    <div class="space-y-4">
+                        <div class="flex items-center justify-between">
+                            <div class="w-12 h-12 rounded-2xl bg-amber-500/10 border border-amber-500/20 text-amber-500 flex items-center justify-center text-2xl shadow-sm group-hover:scale-110 transition-transform">
+                                ⚡
+                            </div>
+                            <span class="px-2.5 py-1 rounded-full text-[10px] font-extrabold tracking-wider bg-amber-100 text-amber-800 dark:bg-amber-950/80 dark:text-amber-300 uppercase">
+                                SPEED
+                            </span>
+                        </div>
+                        <div>
+                            <h3 class="text-xl font-extrabold">RekenSnelheid</h3>
+                            <p class="text-xs text-amber-600 dark:text-amber-400 font-semibold mt-0.5">Snelheid & Accuraatheid</p>
+                        </div>
+                        <p class="text-xs text-slate-600 dark:text-slate-300 leading-relaxed">
+                            Los sommen op tegen de klok en vergelijk je snelheid met de menselijke normaalverdeling.
+                        </p>
+                    </div>
+
+                    <div class="mt-6 pt-4 border-t border-slate-100 dark:border-slate-700/60">
+                        <button onclick="setupGame('rekensnelheid')" class="w-full py-3 px-4 bg-amber-500 hover:bg-amber-600 text-white font-bold rounded-2xl shadow-lg shadow-amber-500/25 transition text-xs">
+                            Speel RekenSnelheid
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Math Peeler Card -->
+                <div class="bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700/80 rounded-3xl p-6 shadow-md hover:shadow-xl hover:-translate-y-1 transition-all duration-200 flex flex-col justify-between group">
+                    <div class="space-y-4">
+                        <div class="flex items-center justify-between">
+                            <div class="w-12 h-12 rounded-2xl bg-purple-500/10 border border-purple-500/20 text-purple-500 flex items-center justify-center text-2xl shadow-sm group-hover:scale-110 transition-transform">
+                                🧅
+                            </div>
+                            <span class="px-2.5 py-1 rounded-full text-[10px] font-extrabold tracking-wider bg-purple-100 text-purple-800 dark:bg-purple-950/80 dark:text-purple-300 uppercase">
+                                ALGEBRA
+                            </span>
+                        </div>
+                        <div>
+                            <h3 class="text-xl font-extrabold">Math Peeler</h3>
+                            <p class="text-xs text-purple-600 dark:text-purple-400 font-semibold mt-0.5">Algebraïsch Inzicht</p>
+                        </div>
+                        <p class="text-xs text-slate-600 dark:text-slate-300 leading-relaxed">
+                            Pel ingewikkelde formules van buiten naar binnen af in stap-voor-stap oplossingen.
+                        </p>
+                    </div>
+
+                    <div class="mt-6 pt-4 border-t border-slate-100 dark:border-slate-700/60">
+                        <button onclick="setupGame('peeler')" class="w-full py-3 px-4 bg-purple-600 hover:bg-purple-700 text-white font-bold rounded-2xl shadow-lg shadow-purple-600/25 transition text-xs">
+                            Speel Math Peeler
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <section id="kubus-view" class="hidden max-w-3xl mx-auto py-4">
+            <div class="kb-stage">
+                <!-- TOP STATUS & STATS BAR -->
+                <div class="kb-top">
+                    <div class="flex items-center gap-3">
+                        <div class="kb-coinbox">
+                            <span class="kb-coin-icon">🪙</span>
+                            <div>
+                                <p class="kb-label">Munten</p>
+                                <div id="kb-coin-counter" class="kb-coin">100</div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="kb-actions">
+                        <button onclick="openMathQuizModal()" class="kb-btn bg-emerald-600 hover:bg-emerald-500 text-white flex items-center gap-1.5 shadow-lg">
+                            <span>🧠</span> <span>Verdien Munten</span>
+                        </button>
+                        <button onclick="resetKubusGame()" class="kb-btn kb-btn-ghost">
+                            🔄 Reset
+                        </button>
+                    </div>
+                </div>
+
+                <!-- SHOP SECTION (BUY CUBES) -->
+                <div class="kb-panel">
+                    <div class="flex justify-between items-center px-1">
+                        <h4 class="text-xs font-extrabold uppercase tracking-wider text-indigo-200">
+                            🛒 Kubus Winkel (Klik om te kopen & plaatsen)
+                        </h4>
+                        <span class="text-[11px] text-amber-300 font-semibold" id="kb-shop-hint">
+                            Kubus valt direct in dezelfde kolom
+                        </span>
+                    </div>
+
+                    <!-- 2 Rows x 4 Columns Shop Grid -->
+                    <div id="kb-shop-grid" class="kb-shop-grid">
+                        <!-- Dynamic Shop Slots rendered via JS -->
+                    </div>
+                </div>
+
+                <!-- MAIN BOARD WITH COLUMN DROP CONTROLS -->
+                <div class="kb-panel relative">
+                    <div class="flex justify-between items-center mb-1">
+                        <h4 class="text-xs font-extrabold uppercase tracking-wider text-indigo-200">
+                            🎯 Speelbord (4 Kolommen Grid)
+                        </h4>
+                    </div>
+
+                    <!-- 4x4 Grid Board -->
+                    <div id="kb-grid-board" class="kb-grid">
+                        <!-- 16 slots (4 rows x 4 cols) dynamically rendered -->
+                    </div>
+
+                    <!-- Visual Message Overlay -->
+                    <p id="kb-status-msg" class="kb-status mt-2"></p>
+                </div>
+
+                <!-- INSTRUCTIONS & HELP -->
+                <details class="kb-how">
+                    <summary>ℹ️ Hoe werkt Kubus Fusie precies?</summary>
+                    <ul class="text-xs space-y-1 mt-2">
+                        <li><b>Kopen & Plaatsen:</b> Klik op een kubus. Elke kubus kost standaard 10 munten.</li>
+                        <li><b>Regenboog Kubus (1% Kans):</b> Deze legendarische kubus heeft altijd Type 1 en Level 10. Fusies hiermee leveren de maximale hoeveelheid munten op!</li>
+                        <li><b>Fusie Rules:</b> Raakt de vallende kubus een kubus van <b>hetzelfde type én level</b>? Dan smelten ze samen tot een hoger level!</li>
+                        <li><b>Geld Verdienen:</b> Fusies leveren direct munten op volgens jouw formule: <code>(Nieuw Level × 10) / Type</code>.</li>
+                    </ul>
+                </details>
+            </div>
+        </section>
+
+        <!-- MATH QUIZ MODAL FOR FREE COINS -->
+        <div id="math-quiz-modal" class="hidden fixed inset-0 bg-slate-950/80 backdrop-blur-sm z-50 flex items-center justify-center p-4">
+            <div class="bg-slate-900 border-2 border-indigo-500/50 rounded-3xl p-6 max-w-md w-full text-center space-y-4 shadow-2xl">
+                <div class="text-4xl">🧠</div>
+                <h3 class="text-xl font-black text-white">Reken-Bonus Som</h3>
+                <p class="text-xs text-indigo-200">Los de som correct op om direct <span class="text-amber-400 font-bold">+50 Munten</span> te verdienen!</p>
+                
+                <div id="quiz-question" class="text-3xl font-black text-amber-300 font-mono py-2 bg-slate-800/80 rounded-2xl border border-slate-700">
+                    12 + 15 = ?
+                </div>
+
+                <form onsubmit="submitMathQuiz(event)" class="space-y-3">
+                    <input type="number" id="quiz-input" placeholder="Jouw antwoord..." autocomplete="off" required
+                           class="w-full text-center bg-slate-950 border-2 border-indigo-500/50 text-white text-2xl font-bold rounded-2xl py-2 px-4 focus:outline-none focus:border-amber-400" />
+                    <div class="flex gap-2">
+                        <button type="button" onclick="closeMathQuizModal()" class="w-1/2 py-2.5 bg-slate-800 text-slate-300 font-bold rounded-xl text-xs">
+                            Annuleren
+                        </button>
+                        <button type="submit" class="w-1/2 py-2.5 bg-amber-500 hover:bg-amber-600 text-slate-950 font-extrabold rounded-xl text-xs">
+                            Beantwoord
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+
+        <!-- OTHER SECONDARY VIEWS (Placeholder setups for complete hub) -->
+        <section id="setup-view" class="hidden max-w-2xl mx-auto py-6">
+            <div class="bg-white dark:bg-slate-800 rounded-3xl p-8 shadow-2xl border border-slate-200 dark:border-slate-700 text-center space-y-6">
+                <div class="text-5xl">🎮</div>
+                <h2 id="setup-title" class="text-2xl font-bold">Kies je niveau</h2>
+                <div class="grid grid-cols-3 gap-3">
+                    <button onclick="resetToHub()" class="p-4 bg-emerald-500 text-white font-bold rounded-2xl">Niveau 1</button>
+                    <button onclick="resetToHub()" class="p-4 bg-amber-500 text-white font-bold rounded-2xl">Niveau 2</button>
+                    <button onclick="resetToHub()" class="p-4 bg-rose-500 text-white font-bold rounded-2xl">Niveau 3</button>
+                </div>
+                <button onclick="resetToHub()" class="text-xs text-slate-500 underline">Terug naar menu</button>
+            </div>
+        </section>
+
+        <section id="theorie-view" class="hidden max-w-3xl mx-auto py-6">
+            <div class="bg-white dark:bg-slate-800 rounded-3xl p-6 shadow-xl border border-slate-200 dark:border-slate-700 space-y-4">
+                <h2 class="text-2xl font-black">📚 Wiskunde Theorie Overzicht</h2>
+                <p class="text-xs text-slate-500">Handige rekenregels en formules voor VMBO, HAVO & VWO.</p>
+                <div class="p-4 bg-indigo-50 dark:bg-indigo-950/40 rounded-2xl text-xs space-y-2">
+                    <p><b>Rekenvolgorde:</b> Haakjes → Machten/Wortels → Vermenigvuldigen/Delen → Optellen/Aftrekken</p>
+                    <p><b>Kwadratische Formule:</b> \( ax^2 + bx + c = 0 \)</p>
+                </div>
+                <button onclick="resetToHub()" class="px-4 py-2 bg-indigo-600 text-white font-bold rounded-xl text-xs">Terug naar Home</button>
+            </div>
+        </section>
+
+        <section id="voortgang-view" class="hidden max-w-3xl mx-auto py-6">
+            <div class="bg-white dark:bg-slate-800 rounded-3xl p-6 shadow-xl border border-slate-200 dark:border-slate-700 space-y-4">
+                <h2 class="text-2xl font-black">🏆 Jouw Voortgang</h2>
+                <div class="grid grid-cols-3 gap-3 text-center">
+                    <div class="p-4 bg-slate-100 dark:bg-slate-900 rounded-2xl">
+                        <div class="text-xs text-slate-500">Streak</div>
+                        <div class="text-2xl font-bold text-amber-500">5 Dagen</div>
+                    </div>
+                    <div class="p-4 bg-slate-100 dark:bg-slate-900 rounded-2xl">
+                        <div class="text-xs text-slate-500">Totaal XP</div>
+                        <div class="text-2xl font-bold text-indigo-500">1,450 XP</div>
+                    </div>
+                    <div class="p-4 bg-slate-100 dark:bg-slate-900 rounded-2xl">
+                        <div class="text-xs text-slate-500">Munten</div>
+                        <div id="voortgang-coins-val" class="text-2xl font-bold text-emerald-500">100</div>
+                    </div>
+                </div>
+                <button onclick="resetToHub()" class="px-4 py-2 bg-indigo-600 text-white font-bold rounded-xl text-xs">Terug naar Home</button>
+            </div>
+        </section>
+    </main>
+
+    <!-- FOOTER -->
+    <footer class="w-full bg-white dark:bg-slate-900 border-t border-slate-200 dark:border-slate-800 py-4 px-4 text-center text-xs text-slate-500">
+        Math & Reken Hub © 2026 — Toegankelijk & Educatief Rekenplatform
+    </footer>
+
+    <script>
+        /* ==========================================================================
+           GLOBAL APPLICATION STATE
+           ========================================================================== */
+        let userStats = {
+            streak: 5,
+            xp: 1450,
+            coins: 100
+        };
+
+        let currentView = 'hub-view';
+
+        function showView(viewId) {
+            const views = ['hub-view', 'setup-view', 'kubus-view', 'theorie-view', 'voortgang-view'];
+            views.forEach(id => {
+                const el = document.getElementById(id);
+                if (el) el.classList.add('hidden');
+            });
+            const target = document.getElementById(viewId);
+            if (target) target.classList.remove('hidden');
+            currentView = viewId;
+            updateGlobalUI();
+        }
+
+        function resetToHub() {
+            showView('hub-view');
+        }
+
+        function updateGlobalUI() {
+            document.getElementById('user-streak-val').textContent = `${userStats.streak} Dagen`;
+            document.getElementById('user-xp-val').textContent = `${userStats.xp.toLocaleString()} XP`;
+            document.getElementById('global-coin-val').textContent = userStats.coins;
+            
+            const voortgangCoin = document.getElementById('voortgang-coins-val');
+            if (voortgangCoin) voortgangCoin.textContent = userStats.coins;
+        }
+
+        /* ==========================================================================
+           KUBUS FUSIE ENGINE (COLUMN STACKING & SHOP REFILL FIXES)
+           ========================================================================== */
+        const KUBUS_COLS = 4;
+        const KUBUS_ROWS = 4;
+        const SHOP_ROWS = 2;
+
+        // 4x4 Grid Board: board[row][col] (null or cube object)
+        let kbBoard = Array(KUBUS_ROWS).fill(null).map(() => Array(KUBUS_COLS).fill(null));
+
+        // 2x4 Shop Options
+        let kbShop = Array(SHOP_ROWS).fill(null).map(() => Array(KUBUS_COLS).fill(null));
+
+        let quizAnswer = null;
+        let lastQuizTime = 0;
+        const QUIZ_COOLDOWN_MS = 5 * 60 * 1000;
+        let selectedBoardCube = null;
+
+        function startKubus() {
+            showView('kubus-view');
+            initShop();
+            renderKubusShop();
+            renderKubusBoard();
+        }
+
+        function initShop() {
+            for (let r = 0; r < SHOP_ROWS; r++) {
+                for (let c = 0; c < KUBUS_COLS; c++) {
+                    refillShopSlot(r, c);
+                }
+            }
+        }
+
+        function renderKubusShop() {
+            const container = document.getElementById('kb-shop-grid');
+            if (!container) return;
+            container.innerHTML = '';
+
+            for (let r = 0; r < SHOP_ROWS; r++) {
+                for (let c = 0; c < KUBUS_COLS; c++) {
+                    const item = kbShop[r][c];
+                    const shopCard = document.createElement('div');
+                    shopCard.className = `kb-shop-item col-slot-${c}`;
+                    shopCard.onclick = () => buyAndDropCube(r, c);
+                    shopCard.onmouseenter = () => highlightCol(c);
+                    shopCard.onmouseleave = () => unhighlightCol();
+
+                    const visualType = ((item.type - 1) % 10) + 1;
+                    const cubeClass = item.isRainbow ? 'kb-cube-rainbow' : `kb-cube-type-${visualType}`;
+
+                    shopCard.innerHTML = `
+                        <div class="kb-cube ${cubeClass}" style="width: 42px; height: 42px;">
+                            <div class="kb-eyes" style="margin-bottom: 0;">
+                                <span class="kb-eye" style="width: 8px; height: 10px;"><span class="kb-pupil" style="width: 4px; height: 4px; left: 1px; top: 2px;"></span></span>
+                                <span class="kb-eye" style="width: 8px; height: 10px;"><span class="kb-pupil" style="width: 4px; height: 4px; left: 1px; top: 2px;"></span></span>
+                            </div>
+                            <span class="kb-cube-val" style="font-size: 0.9rem;">T${item.type}</span>
+                        </div>
+                        <div class="text-center">
+                            <span class="text-[9px] uppercase font-extrabold text-indigo-300 block leading-none">Lvl ${item.level}</span>
+                            <span class="text-[11px] font-black text-amber-300">🪙 ${item.cost}</span>
+                        </div>
+                    `;
+                    container.appendChild(shopCard);
+                }
+            }
+
+            document.getElementById('kb-coin-counter').textContent = userStats.coins;
+        }
+
+        function renderKubusBoard() {
+            const boardEl = document.getElementById('kb-grid-board');
+            if (!boardEl) return;
+            boardEl.innerHTML = '';
+
+            for (let r = 0; r < KUBUS_ROWS; r++) {
+                for (let c = 0; c < KUBUS_COLS; c++) {
+                    const slot = document.createElement('div');
+                    slot.className = `kb-slot col-slot-${c}`;
+                    slot.onclick = () => handleBoardClick(r, c);
+                    
+                    const cubeData = kbBoard[r][c];
+                    if (cubeData) {
+                        const cube = document.createElement('div');
+                        const visualType = ((cubeData.type - 1) % 10) + 1;
+                        const cubeClass = cubeData.isRainbow ? 'kb-cube-rainbow' : `kb-cube-type-${visualType}`;
+                        
+                        let selectedClass = '';
+                        if (selectedBoardCube && selectedBoardCube.r === r && selectedBoardCube.c === c) {
+                            selectedClass = 'kb-selected-cube';
+                        }
+
+                        cube.className = `kb-cube ${cubeClass} ${cubeData.isNew ? 'kb-fall' : ''} ${selectedClass}`;
+                        cubeData.isNew = false;
+
+                        cube.innerHTML = `
+                            <div class="kb-eyes">
+                                <span class="kb-eye"><span class="kb-pupil"></span></span>
+                                <span class="kb-eye"><span class="kb-pupil"></span></span>
+                            </div>
+                            <span class="kb-cube-val">T${cubeData.type}</span>
+                            <span class="kb-cube-lvl-tag">Lvl ${cubeData.level}</span>
+                        `;
+                        slot.appendChild(cube);
+                    }
+                    boardEl.appendChild(slot);
+                }
+            }
+        }
+
+        function highlightCol(colIndex) {
+            const slots = document.querySelectorAll(`.col-slot-${colIndex}`);
+            slots.forEach(slot => slot.classList.add('kb-col-hover'));
+        }
+
+        function unhighlightCol() {
+            const slots = document.querySelectorAll('.kb-slot, .kb-shop-item');
+            slots.forEach(slot => slot.classList.remove('kb-col-hover'));
+        }
+
+        function buyAndDropCube(shopRow, col) {
+            const shopItem = kbShop[shopRow][col];
+            if (!shopItem) return;
+
+            if (userStats.coins < shopItem.cost) {
+                showStatusMsg(`⚠️ Niet genoeg munten! Je hebt 🪙 ${shopItem.cost} nodig. Klik op "Verdien Munten".`, true);
+                return;
+            }
+
+            let targetRow = -1;
+            for (let r = KUBUS_ROWS - 1; r >= 0; r--) {
+                if (kbBoard[r][col] === null) {
+                    targetRow = r;
+                    break;
+                }
+            }
+
+            if (targetRow === -1) {
+                showStatusMsg(`⚠️ Kolom is vol! Kies een andere kolom of laat cubes fuseren.`, true);
+                return;
+            }
+
+            userStats.coins -= shopItem.cost;
+            updateGlobalUI();
+
+            const newCube = {
+                level: shopItem.level,
+                type: shopItem.type,
+                isRainbow: shopItem.isRainbow,
+                isNew: true
+            };
+            kbBoard[targetRow][col] = newCube;
+
+            showStatusMsg(`✅ Kubus (Type ${shopItem.type}, Lvl ${shopItem.level}) geplaatst!`);
+
+            refillShopSlot(shopRow, col);
+            executeFusionLogic(targetRow, col);
+
+            renderKubusShop();
+            renderKubusBoard();
+        }
+
+        function refillShopSlot(shopRow, col) {
+            // 1% kans op een regenboog kubus
+            const isRainbow = Math.random() < 0.01;
+            
+            let type, level, cost;
+
+            if (isRainbow) {
+                type = 1;
+                level = 10;
+                cost = 10;
+            } else {
+                type = Math.floor(Math.random() * 10) + 1;
+                level = 1;
+                cost = 10; // Vaste kosten voor reguliere drops om de balans te behouden
+            }
+
+            kbShop[shopRow][col] = {
+                id: Date.now() + Math.random(),
+                level: level,
+                type: type,
+                cost: cost,
+                isRainbow: isRainbow
+            };
+        }
+
+        function executeFusionLogic(row, col) {
+            let cube = kbBoard[row][col];
+            if (!cube) return;
+
+            // Fuseren vereist nu hetzelfde TYPE en hetzelfde LEVEL
+            if (row < KUBUS_ROWS - 1) {
+                const bottomCube = kbBoard[row + 1][col];
+                if (bottomCube && bottomCube.type === cube.type && bottomCube.level === cube.level) {
+                    const newLevel = cube.level + 1;
+                    
+                    kbBoard[row][col] = null;
+                    kbBoard[row + 1][col] = {
+                        level: newLevel,
+                        type: cube.type,
+                        isRainbow: cube.isRainbow || bottomCube.isRainbow,
+                        isNew: true
+                    };
+
+                    // Nieuwe munten formule: (lvl * 10) / type
+                    const bonusCoins = Math.floor((newLevel * 10) / cube.type);
+                    userStats.coins += bonusCoins;
+                    userStats.xp += newLevel * 20;
+                    updateGlobalUI();
+
+                    showStatusMsg(`🔥 FUSIE! Niveau ${newLevel} kubus gemaakt! (+🪙 ${bonusCoins})`);
+
+                    applyGravity();
+                    executeFusionLogic(row + 1, col);
+                    return;
+                }
+            }
+
+            const neighbors = [
+                { r: row, c: col - 1 },
+                { r: row, c: col + 1 }
+            ];
+
+            for (let n of neighbors) {
+                if (n.c >= 0 && n.c < KUBUS_COLS) {
+                    const adjCube = kbBoard[n.r][n.c];
+                    if (adjCube && adjCube.type === cube.type && adjCube.level === cube.level) {
+                        const newLevel = cube.level + 1;
+
+                        kbBoard[n.r][n.c] = null;
+                        kbBoard[row][col] = {
+                            level: newLevel,
+                            type: cube.type,
+                            isRainbow: cube.isRainbow || adjCube.isRainbow,
+                            isNew: true
+                        };
+
+                        const bonusCoins = Math.floor((newLevel * 10) / cube.type);
+                        userStats.coins += bonusCoins;
+                        userStats.xp += newLevel * 25;
+                        updateGlobalUI();
+
+                        showStatusMsg(`💥 KETTING FUSIE! Niveau ${newLevel} kubus gevormd! (+🪙 ${bonusCoins})`);
+
+                        applyGravity();
+                        executeFusionLogic(row, col);
+                        break;
+                    }
+                }
+            }
+        }
+
+        function handleBoardClick(r, c) {
+            const clickedCube = kbBoard[r][c];
+
+            // Als er nog niks geselecteerd is
+            if (!selectedBoardCube) {
+                if (clickedCube) {
+                    selectedBoardCube = { r, c };
+                    renderKubusBoard();
+                }
+                return;
+            }
+
+            const sr = selectedBoardCube.r;
+            const sc = selectedBoardCube.c;
+
+            // Klik op dezelfde kubus = deselecteren
+            if (sr === r && sc === c) {
+                selectedBoardCube = null;
+                renderKubusBoard();
+                return;
+            }
+
+            // Controleer of de nieuwe klik horizontaal of verticaal aangrenzend is
+            const isAdjacent = (Math.abs(sr - r) === 1 && sc === c) || (Math.abs(sc - c) === 1 && sr === r);
+
+            if (isAdjacent && clickedCube) {
+                // Voer handmatige fusie uit!
+                const firstCube = kbBoard[sr][sc];
+                const secondCube = clickedCube;
+
+                const newLevel = firstCube.level * secondCube.level;
+                const newType = firstCube.type * secondCube.type;
+                const isRainbow = firstCube.isRainbow || secondCube.isRainbow;
+
+                // De nieuwe kubus komt op de positie van de tweede (laatst geklikte) kubus
+                kbBoard[r][c] = {
+                    level: newLevel,
+                    type: newType,
+                    isRainbow: isRainbow,
+                    isNew: true
+                };
+                kbBoard[sr][sc] = null; // Verwijder de eerste kubus
+
+                // Bereken munten volgens de door jou gekozen methode
+                let formulaCoins = Math.max(1, Math.floor((newLevel * 10) / newType));
+
+                userStats.coins += formulaCoins;
+                userStats.xp += Math.max(10, formulaCoins);
+                updateGlobalUI();
+
+                showStatusMsg(`✨ HANDMATIGE FUSIE! Niveau ${newLevel} (Type ${newType})! (+🪙 ${formulaCoins})`);
+
+                selectedBoardCube = null;
+                applyGravity();
+                renderKubusBoard();
+            } else if (clickedCube) {
+                // Klik op een andere, niet-aangrenzende kubus verandert de selectie
+                selectedBoardCube = { r, c };
+                renderKubusBoard();
+            } else {
+                // Klik in een lege ruimte deselecteert
+                selectedBoardCube = null;
+                renderKubusBoard();
+            }
+        }
+
+        function applyGravity() {
+            let moved = false;
+            for (let c = 0; c < KUBUS_COLS; c++) {
+                let writeIdx = KUBUS_ROWS - 1;
+                // Schuif alles in deze kolom zo ver mogelijk naar beneden (handig na handmatige fusies)
+                for (let r = KUBUS_ROWS - 1; r >= 0; r--) {
+                    if (kbBoard[r][c] !== null) {
+                        if (r !== writeIdx) {
+                            kbBoard[writeIdx][c] = kbBoard[r][c];
+                            kbBoard[r][c] = null;
+                            moved = true;
+                        }
+                        writeIdx--;
+                    }
+                }
+            }
+            if (moved) renderKubusBoard();
+        }
+
+        function showStatusMsg(msg, isError = false) {
+            const statusEl = document.getElementById('kb-status-msg');
+            if (statusEl) {
+                statusEl.textContent = msg;
+                statusEl.style.color = isError ? '#f87171' : '#fde68a';
+            }
+        }
+
+        function resetKubusGame() {
+            kbBoard = Array(KUBUS_ROWS).fill(null).map(() => Array(KUBUS_COLS).fill(null));
+            userStats.coins = 100;
+            updateGlobalUI();
+            initShop();
+            renderKubusShop();
+            renderKubusBoard();
+            showStatusMsg("Spel gereset! Je hebt 100 beginmunten gekregen.");
+        }
+
+        /* ==========================================================================
+           MATH QUIZ MODAL FOR EARNING EXTRA COINS
+           ========================================================================== */
+        function openMathQuizModal() {
+            const now = Date.now();
+            if (now - lastQuizTime < QUIZ_COOLDOWN_MS) {
+                const remainingSecs = Math.ceil((QUIZ_COOLDOWN_MS - (now - lastQuizTime)) / 1000);
+                const mins = Math.floor(remainingSecs / 60);
+                const secs = remainingSecs % 60;
+                showStatusMsg(`⏳ Reken-Bonus is op afkoelperiode! Wacht nog ${mins}m ${secs}s.`, true);
+                return;
+            }
+
+            const a = Math.floor(Math.random() * 25) + 5;
+            const b = Math.floor(Math.random() * 25) + 5;
+            quizAnswer = a + b;
+            
+            document.getElementById('quiz-question').textContent = `${a} + ${b} = ?`;
+            document.getElementById('quiz-input').value = '';
+            document.getElementById('math-quiz-modal').classList.remove('hidden');
+            setTimeout(() => document.getElementById('quiz-input').focus(), 100);
+        }
+
+        function closeMathQuizModal() {
+            document.getElementById('math-quiz-modal').classList.add('hidden');
+        }
+
+        function submitMathQuiz(e) {
+            e.preventDefault();
+            const val = parseInt(document.getElementById('quiz-input').value, 10);
+            if (val === quizAnswer) {
+                userStats.coins += 50;
+                userStats.xp += 15;
+                lastQuizTime = Date.now(); // Start de 5-minuten timer
+                updateGlobalUI();
+                renderKubusShop();
+                closeMathQuizModal();
+                showStatusMsg("🎉 Goed berekend! +50 Munten toegevoegd!");
+            } else {
+                document.getElementById('quiz-question').textContent = "❌ Probeer opnieuw!";
+                setTimeout(() => openMathQuizModal(), 1000);
+            }
+        }
+
+        /* ==========================================================================
+           ACCESSIBILITY & THEMING CONTROLS
+           ========================================================================== */
+        function toggleA11yMenu(e) {
+            e.stopPropagation();
+            const dropdown = document.getElementById('a11y-dropdown');
+            dropdown.classList.toggle('hidden');
+        }
+
+        document.addEventListener('click', () => {
+            const dropdown = document.getElementById('a11y-dropdown');
+            if (dropdown && !dropdown.classList.contains('hidden')) {
+                dropdown.classList.add('hidden');
+            }
+        });
+
+        function setTheme(theme) {
+            document.documentElement.classList.remove('dark', 'oled-dark');
+            if (theme === 'dark') {
+                document.documentElement.classList.add('dark');
+            } else if (theme === 'oled') {
+                document.documentElement.classList.add('dark', 'oled-dark');
+            }
+        }
+
+        function setFont(font) {
+            document.body.classList.remove('font-inter', 'font-lexend', 'font-dyslexic');
+            document.body.classList.add(`font-${font}`);
+        }
+
+        function setLanguage(lang) {
+            document.getElementById('lang-btn-nl').classList.toggle('bg-white', lang === 'nl');
+            document.getElementById('lang-btn-en').classList.toggle('bg-white', lang === 'en');
+        }
+
+        function setupGame(type) {
+            showView('setup-view');
+        }
+
+        // Initialize App
+        window.onload = function() {
+            updateGlobalUI();
+        };
+    </script>
+</body>
+</html>
